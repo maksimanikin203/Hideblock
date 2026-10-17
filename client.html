@@ -318,7 +318,7 @@ const CLOTHES = {
   red_shirt: { name:'Красная футболка', price:10 },
   black_suit: { name:'Черный костюм', price:25 },
 };
-function clothesColor(t){
+function getClothesColor(t){
   return t==='blue_shirt'?'#5f8fe2': t==='red_shirt'?'#e2695f': t==='black_suit'?'#2a2a2a': '#eef2f9';
 }
 
@@ -552,8 +552,8 @@ function buildLobbyWorld(){
     terminal: { x: rw/2, y: rh*0.30, hw: 36, hd: 36, h: 56 },
     roomW: rw, roomH: rh,
     walls: [
-      { x: rw/2, y: -22, hw: rw/2, hd: 22, h: 110, top:'#242c3d', side1:'#1a2130', side2:'#131a26' },
-      { x: -22, y: rh/2, hw: 22, hd: rh/2, h: 110, top:'#242c3d', side1:'#1a2130', side2:'#131a26' },
+      { x: rw/2, y: -22, hw: rw/2, hd: 22, h: 110, top:'#2e3a52', side1:'#252f47', side2:'#1a2235' },
+      { x: -22, y: rh/2, hw: 22, hd: rh/2, h: 110, top:'#2e3a52', side1:'#252f47', side2:'#1a2235' },
     ],
     colliders: [{ x: rw/2, y: rh*0.30, hw: 38, hd: 38 }],
   };
@@ -595,7 +595,13 @@ function updateLobby(dt){
 }
 function renderLobby(){
   const w = lobbyWorld; if (!w) return;
-  drawFloor(0, 0, w.roomW, w.roomH, '#151c29', 'rgba(255,255,255,0.045)', 60);
+  drawFloor(0, 0, w.roomW, w.roomH, '#1e2a40', 'rgba(255,255,255,0.08)', 60);
+  poly([
+    project(0, 0, 0),
+    project(w.roomW, 0, 0),
+    project(w.roomW, w.roomH, 0),
+    project(0, w.roomH, 0),
+  ], null, '#5ac8ff88', 2.5);
   w.walls.forEach(wall => drawLegacyCrate(wall));
   const t = w.terminal;
   const items = [{ d: t.x+t.y, fn: () => drawTerminal(t) }];
@@ -811,7 +817,6 @@ function updateMainGame(dt){
       me.y += (-ix+iy)*inv*sp*dt;
       me.fx = (ix+iy)*inv; me.fy = (-ix+iy)*inv;
     }
-    // collision with solid non-passable crates
     for (const c of g.crates){
       if (!c.solid || PASSABLE_TYPES.has(c.type)) continue;
       const cx = clamp(me.x, c.x - c.hw, c.x + c.hw);
@@ -843,7 +848,6 @@ function updateMainGame(dt){
     state.nearCrate = null;
   }
 
-  // fov smooth
   let targetFov;
   if (me.role === 'hider' && g.phase === 'prep') targetFov = 0.12;
   else if (me.role === 'hider') targetFov = g.fovPlayer;
@@ -981,7 +985,6 @@ function drawObject(type, cx, cy, highlight){
   const h = def.h;
   const z = cam.zoom;
 
-  // ground shadow
   poly([project(x0,y0,0),project(x0+w,y0,0),project(x0+w,y0+d,0),project(x0,y0+d,0)],'rgba(0,0,0,0.25)');
 
   switch (def.render) {
@@ -1093,7 +1096,6 @@ function drawGlassWall(x0, y0, w, d, h){
   ctx.restore();
 }
 
-/* enhanced tree: bark + multi-layer foliage */
 function drawTree(x0, y0, w, d, h){
   const cx = x0 + w/2, cy = y0 + d/2;
   const z = cam.zoom;
@@ -1102,16 +1104,12 @@ function drawTree(x0, y0, w, d, h){
   ctx.beginPath(); ctx.ellipse(sh.x, sh.y, w*0.55*ISO_X*z, w*0.55*ISO_Y*z, 0, 0, TAU);
   ctx.fill(); ctx.restore();
 
-  // trunk with bark
   const trunkW = w * 0.22;
   const tx0 = cx - trunkW/2, ty0 = cy - trunkW/2;
   const trunkH = h * 0.55;
   drawIsoBox(tx0, ty0, trunkW, trunkW, trunkH, {
     top: '#8b6a44', side1: '#5a4429', side2: '#3f2f1c'
   });
-  // bark lines
-  const barkL = project(tx0, ty0 + trunkW, trunkH * 0.3);
-  const barkR = project(tx0 + trunkW, ty0 + trunkW, trunkH * 0.3);
   ctx.save();
   ctx.strokeStyle = 'rgba(30,20,10,0.6)';
   ctx.lineWidth = 1.2*z;
@@ -1123,24 +1121,19 @@ function drawTree(x0, y0, w, d, h){
   }
   ctx.restore();
 
-  // multi-layer foliage: 3 overlapping ellipses
   const crownBase = project(cx, cy, trunkH);
-  // bottom layer (dark)
   ctx.fillStyle = '#2f5a1f';
   ctx.beginPath();
   ctx.ellipse(crownBase.x, crownBase.y - h*0.30*z, w*0.7*ISO_X*z, w*0.5*ISO_Y*z, 0, 0, TAU);
   ctx.fill();
-  // middle layer (base)
   ctx.fillStyle = '#4a7a30';
   ctx.beginPath();
   ctx.ellipse(crownBase.x, crownBase.y - h*0.42*z, w*0.6*ISO_X*z, w*0.42*ISO_Y*z, 0, 0, TAU);
   ctx.fill();
-  // top layer (light)
   ctx.fillStyle = '#5a8b3a';
   ctx.beginPath();
   ctx.ellipse(crownBase.x, crownBase.y - h*0.52*z, w*0.45*ISO_X*z, w*0.3*ISO_Y*z, 0, 0, TAU);
   ctx.fill();
-  // highlight dots
   ctx.fillStyle = 'rgba(140,200,90,0.5)';
   for (let i = 0; i < 5; i++){
     const ang = (i/5)*TAU;
@@ -1192,13 +1185,11 @@ function drawPumpkin(x0, y0, w, d, h){
   ctx.fillRect(base.x - 1.5*z, bodyY - h*0.55*z, 3*z, 5*z);
 }
 
-/* enhanced fence: planks + rails + posts */
 function drawFence(x0, y0, w, d, h){
   const z = cam.zoom;
   const color = '#a87646';
   const dark = '#6b4a28';
 
-  // two horizontal rails
   ctx.save();
   ctx.strokeStyle = dark;
   ctx.lineWidth = 3*z;
@@ -1210,7 +1201,6 @@ function drawFence(x0, y0, w, d, h){
   ctx.beginPath(); ctx.moveTo(r2a.x, r2a.y); ctx.lineTo(r2b.x, r2b.y); ctx.stroke();
   ctx.restore();
 
-  // two vertical posts
   for (const off of [0.15, 0.85]) {
     const bx = x0 + w*off;
     const by = y0 + d/2;
@@ -1220,7 +1210,6 @@ function drawFence(x0, y0, w, d, h){
     ctx.fillRect(b.x - 2.5*z, t.y, 5*z, b.y - t.y);
     ctx.strokeStyle = dark; ctx.lineWidth = 1;
     ctx.strokeRect(b.x - 2.5*z, t.y, 5*z, b.y - t.y);
-    // pointed top
     ctx.beginPath();
     ctx.moveTo(b.x - 2.5*z, t.y);
     ctx.lineTo(b.x, t.y - 4*z);
@@ -1242,7 +1231,6 @@ function drawHouse(x0, y0, w, d, h){
   const c3 = project(x0+w, y0+d, roofY);
   poly([c1, c2, peak], '#a83e2b', 'rgba(0,0,0,0.35)', 1);
   poly([c2, c3, peak], '#8a3322', 'rgba(0,0,0,0.35)', 1);
-  // window
   const z = cam.zoom;
   const winY = h * 0.4;
   const win = project(x0+w*0.7, y0+d, winY*0.7);
@@ -1250,24 +1238,19 @@ function drawHouse(x0, y0, w, d, h){
   ctx.globalAlpha = 0.85;
   ctx.fillRect(win.x - 5*z, win.y - 10*z, 10*z, 10*z);
   ctx.globalAlpha = 1;
-  // door
   const door = project(x0+w*0.3, y0+d, 0);
   const doorTop = project(x0+w*0.3, y0+d, winY);
   ctx.fillStyle = '#6b4a28';
   ctx.fillRect(door.x - 6*z, doorTop.y, 12*z, door.y - doorTop.y);
 }
 
-/* enhanced truck: detailed cab + cargo + wheels + headlights */
 function drawTruck(x0, y0, w, d, h){
   const z = cam.zoom;
   const bodyH = h * 0.55;
 
-  // cargo box (back)
   drawIsoBox(x0, y0 + d*0.15, w*0.6, d*0.7, bodyH, {
     top: '#d8d8d8', side1: '#a0a0a0', side2: '#808080'
   });
-  // cargo doors
-  const cargoTop = project(x0 + w*0.3, y0 + d*0.85, bodyH);
   ctx.strokeStyle = 'rgba(60,60,60,0.6)';
   ctx.lineWidth = 1*z;
   for (let i = 1; i < 4; i++){
@@ -1277,13 +1260,11 @@ function drawTruck(x0, y0, w, d, h){
     ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
   }
 
-  // cabin (front)
   const cabX = x0 + w*0.6;
   const cabY = y0 + d*0.15;
   drawIsoBox(cabX, cabY, w*0.4, d*0.7, h, {
     top: '#4a7bb5', side1: '#355a85', side2: '#24405f'
   });
-  // windshield
   const wsY = h * 0.75;
   const ws1 = project(cabX + w*0.05, cabY + d*0.7, wsY);
   const ws2 = project(cabX + w*0.35, cabY + d*0.7, wsY);
@@ -1291,22 +1272,18 @@ function drawTruck(x0, y0, w, d, h){
   const ws4 = project(cabX + w*0.05, cabY + d*0.7, h*0.45);
   poly([ws1, ws2, ws3, ws4], '#8fc7f0');
 
-  // side window
   const sw1 = project(cabX + w*0.4, cabY + d*0.2, wsY);
   const sw2 = project(cabX + w*0.4, cabY + d*0.6, wsY);
   const sw3 = project(cabX + w*0.4, cabY + d*0.6, h*0.5);
   const sw4 = project(cabX + w*0.4, cabY + d*0.2, h*0.5);
   poly([sw1, sw2, sw3, sw4], '#8fc7f0');
 
-  // headlights
   const hl1 = project(cabX + w*0.38, cabY + d*0.1, h*0.2);
-  const hl2 = project(cabX + w*0.38, cabY + d*0.1, h*0.15);
   ctx.fillStyle = '#ffe68a';
   ctx.beginPath();
   ctx.arc(hl1.x, hl1.y, 2.5*z, 0, TAU);
   ctx.fill();
 
-  // wheels (6 total: 3 on visible side)
   ctx.fillStyle = '#1a1a1a';
   const wheelY = 6;
   for (const [wx, wy] of [
@@ -1326,22 +1303,18 @@ function drawTruck(x0, y0, w, d, h){
   }
 }
 
-/* enhanced car: detailed body + cabin + windows + wheels + lights */
 function drawCar(x0, y0, w, d, h){
   const z = cam.zoom;
   const bodyH = h * 0.5;
 
-  // lower body
   drawIsoBox(x0 + w*0.05, y0 + d*0.1, w*0.9, d*0.8, bodyH, {
     top: '#c94f4f', side1: '#953735', side2: '#6d2725'
   });
 
-  // cabin
   drawIsoBox(x0 + w*0.2, y0 + d*0.2, w*0.6, d*0.6, h, {
     top: '#e86b6b', side1: '#b8463f', side2: '#8a2f2a'
   });
 
-  // windshield
   const wsY = h * 0.9;
   const ws1 = project(x0 + w*0.25, y0 + d*0.75, wsY);
   const ws2 = project(x0 + w*0.75, y0 + d*0.75, wsY);
@@ -1349,27 +1322,23 @@ function drawCar(x0, y0, w, d, h){
   const ws4 = project(x0 + w*0.25, y0 + d*0.75, h*0.55);
   poly([ws1, ws2, ws3, ws4], '#8fc7f0');
 
-  // side window
   const sw1 = project(x0 + w*0.8, y0 + d*0.25, wsY);
   const sw2 = project(x0 + w*0.8, y0 + d*0.75, wsY);
   const sw3 = project(x0 + w*0.8, y0 + d*0.75, h*0.55);
   const sw4 = project(x0 + w*0.8, y0 + d*0.25, h*0.55);
   poly([sw1, sw2, sw3, sw4], '#8fc7f0');
 
-  // headlights
   const hl = project(x0 + w*0.9, y0 + d*0.3, h*0.25);
   ctx.fillStyle = '#ffe68a';
   ctx.beginPath();
   ctx.arc(hl.x, hl.y, 2*z, 0, TAU);
   ctx.fill();
-  // taillight
   const tl = project(x0 + w*0.05, y0 + d*0.5, h*0.25);
   ctx.fillStyle = '#c9302c';
   ctx.beginPath();
   ctx.arc(tl.x, tl.y, 2*z, 0, TAU);
   ctx.fill();
 
-  // wheels
   ctx.fillStyle = '#1a1a1a';
   for (const [wx, wy] of [
     [x0 + w*0.2, y0 + d*0.9],
@@ -1420,7 +1389,7 @@ function drawHumanoid(px, py, phase, opts){
   opts = opts || {};
   const z = cam.zoom;
   const base = project(px, py, 0);
-  const clothesColor = clothesColor(opts.clothes || 'none');
+  const clothColor = getClothesColor(opts.clothes || 'none');
   const headColor = '#eef2f9';
   const hat = opts.hat || 'none';
   ctx.save(); ctx.globalAlpha = 0.34; ctx.fillStyle = '#000';
@@ -1433,13 +1402,13 @@ function drawHumanoid(px, py, phase, opts){
   const headY = shoulderY - headR - 1*z;
   const swing = Math.sin(phase) * 3.4*z;
   ctx.lineCap = 'round';
-  ctx.strokeStyle = clothesColor; ctx.lineWidth = 5.5*z;
+  ctx.strokeStyle = clothColor; ctx.lineWidth = 5.5*z;
   ctx.beginPath(); ctx.moveTo(base.x-3.6*z, hipY); ctx.lineTo(base.x-3.6*z+swing, base.y); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(base.x+3.6*z, hipY); ctx.lineTo(base.x+3.6*z-swing, base.y); ctx.stroke();
-  ctx.fillStyle = clothesColor; ctx.strokeStyle = 'rgba(18,24,36,0.55)'; ctx.lineWidth = 1.4*z;
+  ctx.fillStyle = clothColor; ctx.strokeStyle = 'rgba(18,24,36,0.55)'; ctx.lineWidth = 1.4*z;
   roundRect(base.x-7*z, shoulderY, 14*z, (hipY-shoulderY)+4*z, 4.5*z);
   ctx.fill(); ctx.stroke();
-  ctx.strokeStyle = clothesColor; ctx.lineWidth = 4.6*z;
+  ctx.strokeStyle = clothColor; ctx.lineWidth = 4.6*z;
   ctx.beginPath(); ctx.moveTo(base.x-7*z, shoulderY+3.5*z); ctx.lineTo(base.x-9.5*z-swing*0.6, hipY+2*z); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(base.x+7*z, shoulderY+3.5*z); ctx.lineTo(base.x+9.5*z+swing*0.6, hipY+2*z); ctx.stroke();
   ctx.beginPath(); ctx.arc(base.x, headY, headR, 0, TAU);
@@ -1539,17 +1508,14 @@ function drawFloatLabel(sx, sy, text){
   ctx.restore();
 }
 
-/* ===== entity rendering ===== */
 function drawEntity(e){
   const phase = state.game.phase;
-  const showName = (phase === 'prep'); // only in prep room
+  const showName = (phase === 'prep');
 
   if (e.role === 'hider' && e.disguised && e.disguiseType){
     const def = OBJECT_DEFS[e.disguiseType];
     if (def){
-      // center disguise on entity
-      const cx = e.x, cy = e.y;
-      drawObject(e.disguiseType, cx, cy, 0);
+      drawObject(e.disguiseType, e.x, e.y, 0);
     } else {
       drawHumanoid(e.x, e.y, performance.now()/80, { hat: e.hat, clothes: e.clothes });
     }
@@ -1585,7 +1551,6 @@ function drawEntity(e){
   }
 }
 
-/* ===== fov overlay ===== */
 function drawFOVOverlay(fov){
   if (fov >= 0.99) return;
   const intensity = Math.min(1, (1.0 - fov) * 2.2);
@@ -1644,7 +1609,6 @@ function renderGame(){
     ctx.restore();
   }
 
-  // fov overlay
   drawFOVOverlay(state.fovCurrent);
 
   if (g.over){
@@ -1664,7 +1628,6 @@ function renderGame(){
   }
 }
 
-/* ===== background ===== */
 let bgCrates = null;
 function initBackground(){
   const rnd = (() => { let a=777; return () => { a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; })();
@@ -1686,7 +1649,6 @@ function renderBackground(){
   drawHumanoid(hx, hy, t*9, { hat: state.hat, clothes: state.clothes });
 }
 
-/* ===== settings / shop / debug ===== */
 function openSettings(){
   const l = state.lobby;
   if (!l || !state.isHost) return;
@@ -1781,7 +1743,6 @@ function handleShopClick(cat, id){
   showToast('Куплено: ' + item.name);
 }
 
-/* ===== roulette ===== */
 let rouletteTimer = 0;
 function showRoulette(msg){
   const names = msg.names || [], ids = msg.ids || [];
@@ -1826,7 +1787,6 @@ function closeRoulette(force){
   if (force) state.pendingGameStart = null;
 }
 
-/* ===== minesweeper / ttt (same as before) ===== */
 function createMinesweeper(){
   const size = 9, mineCount = 10;
   const grid = [], revealed = [], flagged = [];
@@ -1978,7 +1938,6 @@ function createTicTacToe(){
 function openTicTacToe(){ if (!state.ttt) state.ttt = createTicTacToe(); $('#panelTicTacToe').classList.remove('hidden'); }
 function hideTicTacToe(){ $('#panelTicTacToe').classList.add('hidden'); }
 
-/* ===== main loop ===== */
 let lastTime = performance.now();
 function loop(now){
   const dt = Math.min((now-lastTime)/1000, 0.05);
@@ -2000,7 +1959,6 @@ function loop(now){
   requestAnimationFrame(loop);
 }
 
-/* ===== bindings ===== */
 $('#inpName').value = state.name;
 $('#inpName').addEventListener('input', e => {
   state.name = e.target.value || 'Игрок';
