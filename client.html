@@ -5,18 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>blockhide — online</title>
 <style>
-  :root{
-    --bg:#0a0d13; --panel:#151b26; --panel2:#1c2433; --line:#2a3446;
-    --accent:#5ac8ff; --text:#e8edf7; --muted:#8b98ad;
-  }
+  :root{--bg:#0a0d13;--panel:#151b26;--panel2:#1c2433;--line:#2a3446;--accent:#5ac8ff;--text:#e8edf7;--muted:#8b98ad;}
   *{box-sizing:border-box;}
   html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);
-    font-family:'Segoe UI',system-ui,sans-serif;color:var(--text);
-    user-select:none;-webkit-user-select:none;}
+    font-family:'Segoe UI',system-ui,sans-serif;color:var(--text);user-select:none;-webkit-user-select:none;}
   canvas{display:block;position:fixed;inset:0;}
   #ui{position:fixed;inset:0;pointer-events:none;}
   .hidden{display:none !important;}
-
   .btn{pointer-events:auto;border:1px solid var(--line);
     background:linear-gradient(180deg,#222c3d,#1a2230);color:var(--text);
     padding:10px 18px;border-radius:10px;font-size:15px;font-weight:600;
@@ -30,7 +25,6 @@
   .btn.small{padding:7px 14px;font-size:13px;}
   .btn.big{padding:18px 58px;font-size:20px;letter-spacing:.08em;
     text-transform:uppercase;border-radius:14px;}
-
   #screenMenu .logo{position:absolute;left:52px;top:44px;font-size:66px;font-weight:900;
     letter-spacing:-.04em;line-height:1;text-shadow:0 8px 40px rgba(90,200,255,.18);}
   #screenMenu .logo span{color:var(--accent);}
@@ -44,25 +38,21 @@
   #screenMenu .name-box input:focus{border-color:var(--accent);}
   #btnPlay{position:absolute;right:44px;bottom:44px;}
   #connStatus{position:absolute;left:56px;top:250px;font-size:12.5px;color:var(--muted);}
-  #connStatus.ok{color:#7ee787;}
-  #connStatus.err{color:#ff7b72;}
-
+  #connStatus.ok{color:#7ee787;} #connStatus.err{color:#ff7b72;}
   #screenList{display:flex;align-items:center;justify-content:center;
     background:rgba(6,9,15,.55);backdrop-filter:blur(4px);pointer-events:auto;}
   .panel{pointer-events:auto;width:min(560px,92vw);
     background:linear-gradient(180deg,#151b26,#10151e);
-    border:1px solid var(--line);border-radius:18px;
-    padding:26px;box-shadow:0 30px 80px rgba(0,0,0,.6);}
+    border:1px solid var(--line);border-radius:18px;padding:26px;
+    box-shadow:0 30px 80px rgba(0,0,0,.6);}
   .panel h2{margin:0 0 18px;font-size:22px;}
-  .row{display:flex;gap:10px;margin-top:18px;}
-  .row .btn{flex:1;}
+  .row{display:flex;gap:10px;margin-top:18px;} .row .btn{flex:1;}
   .lobby-list{display:flex;flex-direction:column;gap:9px;max-height:44vh;overflow:auto;}
   .lobby-item{display:flex;align-items:center;justify-content:space-between;gap:12px;
     background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;}
   .lobby-item .nm{font-weight:600;font-size:15px;}
   .lobby-item .sub{font-size:12px;color:var(--muted);margin-top:2px;}
   .empty{color:var(--muted);font-size:14px;text-align:center;padding:22px 0;}
-
   .hud{position:absolute;inset:0;pointer-events:none;}
   .hud-top{position:absolute;left:22px;top:20px;right:22px;
     display:flex;align-items:flex-start;justify-content:space-between;}
@@ -74,13 +64,11 @@
   .role.hunter{color:#ff7b72;}
   .role.hider{color:#5ac8ff;}
   .hint{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);
-    background:rgba(16,21,30,.82);border:1px solid var(--line);
-    border-radius:11px;padding:9px 20px;font-size:13.5px;color:var(--muted);
-    backdrop-filter:blur(6px);white-space:nowrap;}
+    background:rgba(16,21,30,.82);border:1px solid var(--line);border-radius:11px;
+    padding:9px 20px;font-size:13.5px;color:var(--muted);backdrop-filter:blur(6px);white-space:nowrap;}
   .players-list{margin-top:10px;display:flex;flex-direction:column;gap:4px;}
   .players-list .pl{font-size:12.5px;color:var(--muted);}
   .players-list .pl.host{color:var(--accent);}
-
   .modal{position:absolute;inset:0;pointer-events:auto;
     background:rgba(5,8,14,.74);backdrop-filter:blur(4px);
     display:flex;align-items:center;justify-content:center;}
@@ -105,18 +93,12 @@
   .check{display:flex;align-items:center;gap:9px;font-size:14px;cursor:pointer;}
   .check input{width:16px;height:16px;accent-color:#5ac8ff;cursor:pointer;}
   .muted{color:var(--muted);font-size:13px;}
-
   .roulette-name{font-size:42px;font-weight:900;letter-spacing:-0.02em;
     color:var(--accent);min-height:60px;display:flex;align-items:center;
     justify-content:center;text-align:center;}
   .roulette-name.winner{color:#ff7b72;text-shadow:0 0 30px rgba(255,123,114,0.8);
     animation:winPulse 0.5s ease-out;}
-  @keyframes winPulse{
-    0%{transform:scale(1);}
-    50%{transform:scale(1.3);}
-    100%{transform:scale(1);}
-  }
-
+  @keyframes winPulse{0%{transform:scale(1);}50%{transform:scale(1.3);}100%{transform:scale(1);}}
   .ms-grid{display:grid;gap:3px;margin:8px 0;user-select:none;}
   .ms-cell{aspect-ratio:1;border:1px solid var(--line);background:#2a3446;
     border-radius:4px;color:var(--text);font-size:15px;font-weight:700;
@@ -126,31 +108,31 @@
   .ms-cell.revealed{background:#1a2028;cursor:default;}
   .ms-cell.mine{background:#8f3b34;}
   .ms-cell.flagged{background:#3a4761;color:#ffd166;}
-  .ms-cell.n1{color:#5ac8ff;}
-  .ms-cell.n2{color:#6ec06a;}
-  .ms-cell.n3{color:#ff7b72;}
-  .ms-cell.n4{color:#a97de0;}
-  .ms-cell.n5{color:#e8c95a;}
-  .ms-cell.n6{color:#5fc7c7;}
-  .ms-cell.n7{color:#eef2f9;}
-  .ms-cell.n8{color:#8b98ad;}
+  .ms-cell.n1{color:#5ac8ff;} .ms-cell.n2{color:#6ec06a;} .ms-cell.n3{color:#ff7b72;}
+  .ms-cell.n4{color:#a97de0;} .ms-cell.n5{color:#e8c95a;} .ms-cell.n6{color:#5fc7c7;}
+  .ms-cell.n7{color:#eef2f9;} .ms-cell.n8{color:#8b98ad;}
+  .ttt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:8px 0;
+    max-width:280px;margin-left:auto;margin-right:auto;}
+  .ttt-cell{aspect-ratio:1;border:1px solid var(--line);background:#2a3446;
+    border-radius:6px;color:var(--text);font-size:36px;font-weight:900;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    font-family:inherit;padding:0;transition:background .1s;}
+  .ttt-cell:hover:not(.taken){background:#34405a;}
+  .ttt-cell.taken{cursor:default;}
+  .ttt-cell.x{color:#5ac8ff;}
+  .ttt-cell.o{color:#ff7b72;}
 </style>
 </head>
 <body>
 <canvas id="cv"></canvas>
-
 <div id="ui">
-
   <div class="screen" id="screenMenu">
     <div class="logo">block<span>hide</span></div>
     <div class="tagline">2.5D онлайн-прятки в мире блоков</div>
-    <div class="name-box">
-      <input id="inpName" maxlength="20" placeholder="Ваше имя" value="Игрок">
-    </div>
+    <div class="name-box"><input id="inpName" maxlength="20" placeholder="Ваше имя" value="Игрок"></div>
     <button class="btn primary big" id="btnPlay">Играть</button>
     <div id="connStatus">Подключение...</div>
   </div>
-
   <div class="screen hidden" id="screenList">
     <div class="panel">
       <h2>Лобби</h2>
@@ -161,7 +143,6 @@
       </div>
     </div>
   </div>
-
   <div class="hud hidden" id="hudLobby">
     <div class="hud-top">
       <div class="hud-card">
@@ -173,7 +154,6 @@
     </div>
     <div class="hint" id="lobbyHint">WASD — ходить · подойди к терминалу и нажми E</div>
   </div>
-
   <div class="hud hidden" id="hudGame">
     <div class="hud-top">
       <div class="hud-card">
@@ -185,7 +165,6 @@
     </div>
     <div class="hint" id="gameHint">Подойди к блоку и нажми E</div>
   </div>
-
   <div class="modal hidden" id="panelSettings">
     <div class="modal-box">
       <h2>Настройки лобби</h2>
@@ -213,7 +192,6 @@
       </div>
     </div>
   </div>
-
   <div class="modal hidden" id="panelRoulette">
     <div class="modal-box" style="text-align:center;width:min(420px,92vw);">
       <h2 style="margin-bottom:14px;">Выбор охотника</h2>
@@ -221,21 +199,28 @@
       <div class="muted" style="margin-top:14px;">Крутится...</div>
     </div>
   </div>
-
   <div class="modal hidden" id="panelMinesweeper">
     <div class="modal-box" style="width:min(480px,92vw);">
-      <h2>Комната ожидания</h2>
-      <div class="muted" style="margin-bottom:14px;">
-        Охотник выйдет через <b id="msTimer" style="color:#ff7b72;">20</b> сек. Разомнись в сапёре!
-      </div>
+      <h2>Сапёр</h2>
       <div class="muted" id="msStatus" style="margin-bottom:8px;min-height:18px;"></div>
       <div class="ms-grid" id="msGrid"></div>
       <div class="row" style="margin-top:14px;">
         <button class="btn small ghost" id="msReset">Сбросить</button>
+        <button class="btn small ghost" id="msClose">Закрыть</button>
       </div>
     </div>
   </div>
-
+  <div class="modal hidden" id="panelTicTacToe">
+    <div class="modal-box" style="width:min(420px,92vw);">
+      <h2>Крестики-нолики</h2>
+      <div class="muted" id="tttStatus" style="margin-bottom:8px;min-height:18px;text-align:center;"></div>
+      <div class="ttt-grid" id="tttGrid"></div>
+      <div class="row" style="margin-top:14px;">
+        <button class="btn small ghost" id="tttReset">Сбросить</button>
+        <button class="btn small ghost" id="tttClose">Закрыть</button>
+      </div>
+    </div>
+  </div>
   <div class="modal hidden" id="panelDebug">
     <div class="modal-box">
       <h2>Отладка</h2>
@@ -244,36 +229,27 @@
         <button class="btn" id="btnSwitchRole" style="width:100%">Стать охотником</button>
       </div>
       <div class="field muted">F12 / ~ — открыть/закрыть</div>
-      <div class="row">
-        <button class="btn ghost" id="btnCloseDebug">Закрыть</button>
-      </div>
+      <div class="row"><button class="btn ghost" id="btnCloseDebug">Закрыть</button></div>
     </div>
   </div>
-
 </div>
 
 <script>
 (function(){
 'use strict';
-
 const $ = s => document.querySelector(s);
 const TAU = Math.PI * 2;
 const clamp = (v,a,b) => v<a?a:(v>b?b:v);
-
 function roundRect(x,y,w,h,r){
   if (ctx.roundRect){ ctx.beginPath(); ctx.roundRect(x,y,w,h,r); return; }
   ctx.beginPath();
-  ctx.moveTo(x+r,y);
-  ctx.arcTo(x+w,y,x+w,y+h,r);
-  ctx.arcTo(x+w,y+h,x,y+h,r);
-  ctx.arcTo(x,y+h,x,y,r);
-  ctx.arcTo(x,y,x+w,y,r);
-  ctx.closePath();
+  ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
 }
 
 const canvas = document.getElementById('cv');
 const ctx = canvas.getContext('2d');
-let W = 0, H = 0, DPR = 1;
+let W=0, H=0, DPR=1;
 function resize(){
   DPR = Math.min(window.devicePixelRatio || 1, 2);
   W = window.innerWidth; H = window.innerHeight;
@@ -281,21 +257,18 @@ function resize(){
   canvas.style.width = W+'px'; canvas.style.height = H+'px';
   ctx.setTransform(DPR,0,0,DPR,0,0);
 }
-window.addEventListener('resize', resize);
-resize();
+window.addEventListener('resize', resize); resize();
 
 const ISO_X = 0.866, ISO_Y = 0.5;
 const cam = { x:0, y:0, zoom:1 };
 function project(wx, wy, wz){
-  const dx = wx - cam.x, dy = wy - cam.y;
-  return {
-    x: W*0.5 + (dx - dy) * ISO_X * cam.zoom,
-    y: H*0.5 + (dx + dy) * ISO_Y * cam.zoom - (wz || 0) * cam.zoom
-  };
+  const dx = wx-cam.x, dy = wy-cam.y;
+  return { x: W*0.5 + (dx-dy)*ISO_X*cam.zoom,
+           y: H*0.5 + (dx+dy)*ISO_Y*cam.zoom - (wz||0)*cam.zoom };
 }
 function screenToWorld(sx, sy){
-  const A = (sx - W*0.5) / (ISO_X * cam.zoom);
-  const B = (sy - H*0.5) / (ISO_Y * cam.zoom);
+  const A = (sx-W*0.5)/(ISO_X*cam.zoom);
+  const B = (sy-H*0.5)/(ISO_Y*cam.zoom);
   return { x: cam.x + (A+B)*0.5, y: cam.y + (B-A)*0.5 };
 }
 
@@ -307,40 +280,32 @@ const BLOCK_COLORS = [
   { top:'#a97de0', side1:'#8660b8', side2:'#684a90' },
   { top:'#5fc7c7', side1:'#459f9f', side2:'#337b7b' },
 ];
-function colorByTop(top){
-  return BLOCK_COLORS.find(c => c.top === top) || BLOCK_COLORS[0];
-}
+function colorByTop(top){ return BLOCK_COLORS.find(c => c.top === top) || BLOCK_COLORS[0]; }
 
 const state = {
-  screen: 'menu',
-  ws: null, connected: false,
+  screen: 'menu', ws: null, connected: false,
   youId: null, name: 'Игрок',
   lobbies: [], lobby: null, isHost: false,
   lobbyPositions: {},
-  game: null,
-  debugEnabled: false,
-  localDisguised: false,
-  localDisguiseColor: null,
-  nearCrate: null,
-  localLockEnd: 0,
-  lastInputSent: 0,
-  lastLobbySent: 0,
+  game: null, debugEnabled: false,
+  localDisguised: false, localDisguiseColor: null,
+  nearCrate: null, nearMachine: null,
+  lastInputSent: 0, lastLobbySent: 0,
   pendingGameStart: null,
+  ms: null, ttt: null,
 };
 
-/* ================= input ================= */
+/* ========= input ========= */
 const keys = Object.create(null);
-const mouse = { x: 0, y: 0, down: false };
-
+const mouse = { x:0, y:0, down:false };
 window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
 canvas.addEventListener('mousedown', e => {
   if (e.button !== 0) return;
   mouse.down = true;
   if (isModalOpen()) return;
-  if (state.screen === 'game') shoot();
+  if (state.screen === 'game' && state.game && state.game.phase === 'main') shoot();
 });
 window.addEventListener('mouseup', e => { if (e.button === 0) mouse.down = false; });
-
 window.addEventListener('keydown', e => {
   if (e.target && /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
   keys[e.code] = true;
@@ -351,6 +316,8 @@ window.addEventListener('keydown', e => {
   if (e.code === 'Escape'){
     if (isModalOpen('#panelDebug')) closeDebug();
     else if (isModalOpen('#panelSettings')) closeSettings();
+    else if (isModalOpen('#panelMinesweeper')) hideMinesweeper();
+    else if (isModalOpen('#panelTicTacToe')) hideTicTacToe();
   }
 });
 window.addEventListener('keyup', e => { keys[e.code] = false; });
@@ -371,16 +338,13 @@ function getInput(){
   return { ix, iy };
 }
 
-/* ================= WebSocket ================= */
+/* ========= ws ========= */
 function connect(){
   const proto = location.protocol === 'https:' ? 'wss' : 'ws';
   const ws = new WebSocket(`${proto}://${location.host}`);
   state.ws = ws;
-  ws.onopen = () => {
-    state.connected = true;
-    setConnStatus('Подключено', 'ok');
-    send({ type: 'setName', name: state.name });
-  };
+  ws.onopen = () => { state.connected = true; setConnStatus('Подключено', 'ok');
+    send({ type: 'setName', name: state.name }); };
   ws.onclose = () => { state.connected = false; setConnStatus('Отключено — перезагрузите', 'err'); };
   ws.onerror = () => setConnStatus('Ошибка соединения', 'err');
   ws.onmessage = ev => {
@@ -388,16 +352,9 @@ function connect(){
     handleMessage(msg);
   };
 }
-function send(msg){
-  if (state.ws && state.ws.readyState === 1) state.ws.send(JSON.stringify(msg));
-}
-function setConnStatus(text, cls){
-  const el = $('#connStatus');
-  el.textContent = text;
-  el.className = cls || '';
-}
+function send(msg){ if (state.ws && state.ws.readyState === 1) state.ws.send(JSON.stringify(msg)); }
+function setConnStatus(t, c){ const el = $('#connStatus'); el.textContent = t; el.className = c||''; }
 
-/* ================= messages ================= */
 function handleMessage(msg){
   switch (msg.type) {
     case 'welcome': state.youId = msg.id; break;
@@ -434,15 +391,14 @@ function handleMessage(msg){
     case 'error': console.warn('server error:', msg.text); break;
     case 'roulette': showRoulette(msg); break;
     case 'gameStart': handleGameStart(msg); break;
-    case 'state': handleState(msg); break;
-    case 'huntersReleased':
-      if (state.game) state.game.huntersReleased = true;
-      hideMinesweeper();
+    case 'phaseChange':
+      if (state.game) state.game.phase = msg.phase;
+      hideMinesweeper(); hideTicTacToe();
       updateGameHud();
       break;
+    case 'state': handleState(msg); break;
     case 'backToLobby':
-      hideMinesweeper();
-      closeRoulette(true);
+      hideMinesweeper(); hideTicTacToe(); closeRoulette(true);
       state.game = null;
       if (msg.lobby){
         state.lobby = msg.lobby;
@@ -452,14 +408,12 @@ function handleMessage(msg){
           if (p.id !== state.youId) state.lobbyPositions[p.id] = { x: p.x, y: p.y, moving: false };
         }
       }
-      buildLobbyWorld();
-      setScreen('lobby');
-      updateLobbyHud();
+      buildLobbyWorld(); setScreen('lobby'); updateLobbyHud();
       break;
   }
 }
 
-/* ================= screens ================= */
+/* ========= screens ========= */
 function setScreen(s){
   state.screen = s;
   $('#screenMenu').classList.toggle('hidden', s !== 'menu');
@@ -472,8 +426,7 @@ function setScreen(s){
 }
 
 function renderLobbyList(){
-  const wrap = $('#lobbyItems');
-  wrap.innerHTML = '';
+  const wrap = $('#lobbyItems'); wrap.innerHTML = '';
   if (!state.lobbies.length){
     const d = document.createElement('div');
     d.className = 'empty';
@@ -482,13 +435,10 @@ function renderLobbyList(){
     return;
   }
   state.lobbies.forEach(lobby => {
-    const item = document.createElement('div');
-    item.className = 'lobby-item';
+    const item = document.createElement('div'); item.className = 'lobby-item';
     const left = document.createElement('div');
-    const nm = document.createElement('div');
-    nm.className = 'nm'; nm.textContent = lobby.name;
-    const sub = document.createElement('div');
-    sub.className = 'sub';
+    const nm = document.createElement('div'); nm.className = 'nm'; nm.textContent = lobby.name;
+    const sub = document.createElement('div'); sub.className = 'sub';
     sub.textContent = `${lobby.players.length}/${lobby.settings.playerCount} · ${lobby.state === 'lobby' ? 'ожидание' : 'идёт игра'}`;
     left.appendChild(nm); left.appendChild(sub);
     const btn = document.createElement('button');
@@ -496,8 +446,7 @@ function renderLobbyList(){
     btn.textContent = lobby.state === 'lobby' ? 'Войти' : 'Занято';
     btn.disabled = lobby.state !== 'lobby';
     btn.onclick = () => send({ type: 'joinLobby', lobbyId: lobby.id });
-    item.appendChild(left); item.appendChild(btn);
-    wrap.appendChild(item);
+    item.appendChild(left); item.appendChild(btn); wrap.appendChild(item);
   });
 }
 
@@ -506,8 +455,7 @@ function updateLobbyHud(){
   if (!l) return;
   $('#lobbyName').textContent = l.name;
   $('#lobbyInfo').textContent = `${l.players.length}/${l.settings.playerCount} · ${state.isHost ? 'вы хост' : 'гость'}`;
-  const pl = $('#playersList');
-  pl.innerHTML = '';
+  const pl = $('#playersList'); pl.innerHTML = '';
   l.players.forEach(p => {
     const d = document.createElement('div');
     d.className = 'pl' + (p.id === l.hostId ? ' host' : '');
@@ -518,21 +466,15 @@ function updateLobbyHud(){
     ? 'WASD — ходить · подойди к терминалу и нажми E'
     : 'WASD — ходить · хост настраивает у терминала';
 }
+function enterLobbyScreen(){ buildLobbyWorld(); setScreen('lobby'); updateLobbyHud(); }
 
-function enterLobbyScreen(){
-  buildLobbyWorld();
-  setScreen('lobby');
-  updateLobbyHud();
-}
-
-/* ================= lobby ================= */
+/* ========= lobby ========= */
 let lobbyWorld = null;
-
 function buildLobbyWorld(){
   const rw = 900, rh = 700;
   lobbyWorld = {
     player: { x: rw/2, y: rh*0.78, r: 13, speed: 230, phase: 0, moving: false },
-    bounds: { x0: 70, y0: 70, x1: rw - 70, y1: rh - 70 },
+    bounds: { x0: 70, y0: 70, x1: rw-70, y1: rh-70 },
     terminal: { x: rw/2, y: rh*0.30, hw: 36, hd: 36, h: 56 },
     roomW: rw, roomH: rh,
     walls: [
@@ -541,91 +483,69 @@ function buildLobbyWorld(){
     ],
     colliders: [{ x: rw/2, y: rh*0.30, hw: 38, hd: 38 }],
   };
-  cam.zoom = 0.9;
-  cam.x = lobbyWorld.player.x;
-  cam.y = lobbyWorld.player.y;
+  cam.zoom = 0.9; cam.x = lobbyWorld.player.x; cam.y = lobbyWorld.player.y;
 }
-
 function updateLobby(dt){
-  const w = lobbyWorld;
-  if (!w) return;
+  const w = lobbyWorld; if (!w) return;
   const p = w.player;
   const { ix, iy } = getInput();
   const moving = ix !== 0 || iy !== 0;
   p.moving = moving;
   if (moving){
     const inv = Math.SQRT1_2;
-    p.x += (ix + iy) * inv * p.speed * dt;
-    p.y += (-ix + iy) * inv * p.speed * dt;
-    p.phase += dt * 12;
+    p.x += (ix+iy)*inv*p.speed*dt;
+    p.y += (-ix+iy)*inv*p.speed*dt;
+    p.phase += dt*12;
   }
   collideCircleBoxes(p, w.colliders);
   p.x = clamp(p.x, w.bounds.x0, w.bounds.x1);
   p.y = clamp(p.y, w.bounds.y0, w.bounds.y1);
-  cam.x += (p.x - cam.x) * Math.min(1, dt * 8);
-  cam.y += (p.y - cam.y) * Math.min(1, dt * 8);
-
+  cam.x += (p.x-cam.x)*Math.min(1, dt*8);
+  cam.y += (p.y-cam.y)*Math.min(1, dt*8);
   const now = performance.now();
   if (now - state.lastLobbySent > 60){
     state.lastLobbySent = now;
     send({ type: 'lobbyMove', x: p.x, y: p.y, moving });
   }
 }
-
 function collideCircleBoxes(p, boxes){
   for (const b of boxes){
-    const cx = clamp(p.x, b.x - b.hw, b.x + b.hw);
-    const cy = clamp(p.y, b.y - b.hd, b.y + b.hd);
-    const dx = p.x - cx, dy = p.y - cy;
-    const d2 = dx*dx + dy*dy;
+    const cx = clamp(p.x, b.x-b.hw, b.x+b.hw);
+    const cy = clamp(p.y, b.y-b.hd, b.y+b.hd);
+    const dx = p.x-cx, dy = p.y-cy, d2 = dx*dx+dy*dy;
     if (d2 < p.r*p.r){
-      if (d2 < 1e-8){
-        p.x = b.x + b.hw + p.r;
-      } else {
-        const d = Math.sqrt(d2);
-        p.x += dx/d * (p.r - d);
-        p.y += dy/d * (p.r - d);
-      }
+      if (d2 < 1e-8){ p.x = b.x + b.hw + p.r; }
+      else { const d = Math.sqrt(d2); p.x += dx/d*(p.r-d); p.y += dy/d*(p.r-d); }
     }
   }
 }
-
 function renderLobby(){
-  const w = lobbyWorld;
-  if (!w) return;
+  const w = lobbyWorld; if (!w) return;
   drawFloor(0, 0, w.roomW, w.roomH, '#151c29', 'rgba(255,255,255,0.045)', 60);
   w.walls.forEach(wall => drawCrate(wall));
-
   const t = w.terminal;
-  const items = [{ d: t.x + t.y, fn: () => drawTerminal(t) }];
-
+  const items = [{ d: t.x+t.y, fn: () => drawTerminal(t) }];
   if (state.lobby && state.lobby.players){
     for (const p of state.lobby.players){
       let px, py, moving;
-      if (p.id === state.youId){
-        px = w.player.x; py = w.player.y; moving = w.player.moving;
-      } else {
+      if (p.id === state.youId){ px = w.player.x; py = w.player.y; moving = w.player.moving; }
+      else {
         const pos = state.lobbyPositions[p.id] || { x: p.x || 450, y: p.y || 546, moving: false };
         px = pos.x; py = pos.y; moving = pos.moving;
       }
-      const phase = moving ? performance.now() / 80 : 0;
+      const phase = moving ? performance.now()/80 : 0;
       const isMe = p.id === state.youId;
       items.push({
-        d: px + py,
+        d: px+py,
         fn: () => {
           drawHumanoid(px, py, '#eef2f9', phase);
           if (isMe){
-            const b = project(px, py, 0);
-            const z = cam.zoom;
-            ctx.save();
-            ctx.globalAlpha = 0.85;
-            ctx.strokeStyle = '#7fe3ff';
-            ctx.lineWidth = 2;
+            const b = project(px, py, 0); const z = cam.zoom;
+            ctx.save(); ctx.globalAlpha = 0.85;
+            ctx.strokeStyle = '#7fe3ff'; ctx.lineWidth = 2;
             ctx.setLineDash([6*z, 5*z]);
-            ctx.lineDashOffset = -performance.now() * 0.012;
-            ctx.beginPath();
-            ctx.ellipse(b.x, b.y, 17*z, 8.5*z, 0, 0, TAU);
-            ctx.stroke();
+            ctx.lineDashOffset = -performance.now()*0.012;
+            ctx.beginPath(); ctx.ellipse(b.x, b.y, 17*z, 8.5*z, 0, 0, TAU); ctx.stroke();
             ctx.restore();
           }
           const lbl = project(px, py, 46);
@@ -639,94 +559,61 @@ function renderLobby(){
       });
     }
   }
-
-  items.sort((a,b) => a.d - b.d);
-  items.forEach(i => i.fn());
-
-  const dist = Math.hypot(w.player.x - t.x, w.player.y - t.y);
+  items.sort((a,b) => a.d-b.d); items.forEach(i => i.fn());
+  const dist = Math.hypot(w.player.x-t.x, w.player.y-t.y);
   if (dist < 140){
-    const pr = project(t.x, t.y, t.h + 40);
+    const pr = project(t.x, t.y, t.h+40);
     drawFloatLabel(pr.x, pr.y, 'E');
   }
 }
-
 function drawTerminal(t){
   drawCrate({ x:t.x, y:t.y, hw:t.hw, hd:t.hd, h:t.h, top:'#3d7ea8', side1:'#2b5c7d', side2:'#1f455e' });
   const p = project(t.x, t.y, t.h);
-  const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 70 * cam.zoom);
-  g.addColorStop(0, 'rgba(90,200,255,0.40)');
-  g.addColorStop(1, 'rgba(90,200,255,0)');
-  ctx.fillStyle = g;
-  ctx.beginPath(); ctx.arc(p.x, p.y, 70 * cam.zoom, 0, TAU); ctx.fill();
+  const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 70*cam.zoom);
+  g.addColorStop(0, 'rgba(90,200,255,0.40)'); g.addColorStop(1, 'rgba(90,200,255,0)');
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x, p.y, 70*cam.zoom, 0, TAU); ctx.fill();
 }
 
-/* ================= game ================= */
+/* ========= game ========= */
 function handleGameStart(msg){
-  if (!$('#panelRoulette').classList.contains('hidden')){
-    state.pendingGameStart = msg;
-    return;
-  }
+  if (!$('#panelRoulette').classList.contains('hidden')){ state.pendingGameStart = msg; return; }
   applyGameStart(msg);
 }
-
 function applyGameStart(msg){
   state.pendingGameStart = null;
   state.game = {
-    R: msg.game.R,
-    crates: msg.game.crates,
+    R: msg.game.R, crates: msg.game.crates,
     entities: msg.game.entities,
-    projectiles: [],
-    effects: [],
-    toasts: [],
+    projectiles: [], effects: [], toasts: [],
     time: 0, over: false, overTime: 0,
-    huntersReleased: false,
-    hunterLockUntil: msg.game.hunterLockUntil,
-    lockDuration: msg.game.lockDuration,
-    transitionCountdown: 0,
+    phase: msg.game.phase || 'prep',
+    prepEndsAt: msg.game.prepEndsAt,
+    hideEndsAt: msg.game.hideEndsAt,
   };
   state.youId = msg.youId;
   state.localDisguised = false;
   state.localDisguiseColor = null;
-  state.nearCrate = null;
-  state.localLockEnd = performance.now() + (msg.game.lockDuration || 0);
+  state.nearCrate = null; state.nearMachine = null;
 
   const me = state.game.entities.find(e => e.id === state.youId);
-  if (me){ cam.x = me.x; cam.y = me.y; }
-  cam.zoom = 1.25;
-
-  // Отправляем позицию для синхронизации
   if (me){
-    send({
-      type: 'input',
-      x: me.x, y: me.y, fx: me.fx, fy: me.fy,
-      disguised: false, disguiseColor: null
-    });
+    cam.x = me.x; cam.y = me.y;
+    send({ type: 'input', x: me.x, y: me.y, fx: me.fx, fy: me.fy, disguised: false, disguiseColor: null });
   }
+  cam.zoom = me && state.game.phase === 'prep' ? 1.3 : 1.25;
 
   closeSettings();
   setScreen('game');
   updateGameHud();
-
-  const meNow = localEntity();
-  if (meNow && meNow.role === 'hunter'){
-    state.minesweeper = createMinesweeper();
-    showMinesweeper();
-  } else {
-    hideMinesweeper();
-  }
+  hideMinesweeper(); hideTicTacToe();
 }
-
 function handleState(msg){
   if (!state.game) return;
   const g = state.game;
-
   const prevMe = g.entities.find(e => e.id === state.youId);
   const myPos = prevMe ? { x: prevMe.x, y: prevMe.y, fx: prevMe.fx, fy: prevMe.fy } : null;
-
   g.entities = (msg.entities || []).map(e => {
-    if (e.id === state.youId && myPos){
-      return { ...e, x: myPos.x, y: myPos.y, fx: myPos.fx, fy: myPos.fy };
-    }
+    if (e.id === state.youId && myPos) return { ...e, x: myPos.x, y: myPos.y, fx: myPos.fx, fy: myPos.fy };
     return e;
   });
   g.projectiles = msg.projectiles || [];
@@ -735,94 +622,219 @@ function handleState(msg){
   g.time = msg.time || 0;
   g.over = !!msg.over;
   g.overTime = msg.overTime || 0;
-  if (msg.huntersReleased !== undefined) g.huntersReleased = !!msg.huntersReleased;
-
+  if (msg.phase) g.phase = msg.phase;
   updateGameHud();
 }
-
 function localEntity(){
   if (!state.game) return null;
   return state.game.entities.find(e => e.id === state.youId);
 }
 
-function sendInput(){
+/* ------- prepare room ------- */
+const PREP = {
+  minX: 30, minY: 30, maxX: 570, maxY: 470,
+  w: 600, h: 500,
+  machines: [
+    { id: 'minesweeper', x: 150, y: 200, hw: 30, hd: 30, h: 60, label: 'M' },
+    { id: 'tictactoe', x: 450, y: 200, hw: 30, hd: 30, h: 60, label: 'XO' },
+  ],
+  spawn: { x: 300, y: 400 },
+};
+
+function isPrepPhase(){ return state.game && state.game.phase === 'prep'; }
+function isHidePhase(){ return state.game && state.game.phase === 'hide'; }
+function isMainPhase(){ return state.game && state.game.phase === 'main'; }
+
+function isInPrepRoom(){
   const me = localEntity();
-  if (!me || !state.game || state.game.over) return;
-  send({
-    type: 'input',
-    x: me.x, y: me.y,
-    fx: me.fx, fy: me.fy,
-    disguised: state.localDisguised,
-    disguiseColor: state.localDisguiseColor,
-  });
+  if (!me) return false;
+  if (isPrepPhase()) return true;
+  if (isHidePhase() && me.role === 'hunter') return true;
+  return false;
 }
 
-function updateGameClient(dt){
-  const g = state.game;
-  if (!g || !g.entities) return;
+function updatePrepRoom(dt){
   const me = localEntity();
   if (!me) return;
+  const { ix, iy } = getInput();
+  const moving = ix !== 0 || iy !== 0;
+  if (moving){
+    const inv = Math.SQRT1_2;
+    me.x += (ix+iy)*inv*190*dt;
+    me.y += (-ix+iy)*inv*190*dt;
+    me.fx = (ix+iy)*inv; me.fy = (-ix+iy)*inv;
+  }
+  // collisions with machines + walls
+  const colliders = PREP.machines.map(m => ({ x: m.x, y: m.y, hw: m.hw, hd: m.hd }));
+  collideCircleBoxes({ ...me, r: 13 }, colliders);
+  me.x = clamp(me.x, PREP.minX, PREP.maxX);
+  me.y = clamp(me.y, PREP.minY, PREP.maxY);
 
-  const isLockedHunter = me.role === 'hunter' && !g.huntersReleased;
+  cam.x += (me.x - cam.x) * Math.min(1, dt*8);
+  cam.y += (me.y - cam.y) * Math.min(1, dt*8);
 
-  if (!g.over && !isLockedHunter){
-    const { ix, iy } = getInput();
-    const moving = ix !== 0 || iy !== 0;
-    if (moving){
-      const inv = Math.SQRT1_2;
-      const sp = 190 * (state.localDisguised ? 0.72 : 1);
-      me.x += (ix + iy) * inv * sp * dt;
-      me.y += (-ix + iy) * inv * sp * dt;
-      me.fx = (ix + iy) * inv;
-      me.fy = (-ix + iy) * inv;
-    }
-    me.x = clamp(me.x, -g.R + 16, g.R - 16);
-    me.y = clamp(me.y, -g.R + 16, g.R - 16);
+  // determine near machine
+  state.nearMachine = null;
+  for (const m of PREP.machines){
+    const d = Math.hypot(me.x-m.x, me.y-m.y);
+    if (d < 85){ state.nearMachine = m; break; }
   }
 
   const now = performance.now();
   if (now - state.lastInputSent > 50){
     state.lastInputSent = now;
-    sendInput();
+    send({ type: 'input', x: me.x, y: me.y, fx: me.fx, fy: me.fy,
+           disguised: false, disguiseColor: null });
+  }
+}
+
+function renderPrepRoom(){
+  const me = localEntity();
+  if (!me) return;
+
+  drawFloor(PREP.minX, PREP.minY, PREP.maxX, PREP.maxY, '#1a2232', 'rgba(255,255,255,0.04)', 40);
+  // walls
+  drawCrate({ x: 300, y: PREP.minY-12, hw: 300, hd: 12, h: 90, top:'#2a3347', side1:'#1f2739', side2:'#161d2b' });
+  drawCrate({ x: 300, y: PREP.maxY+12, hw: 300, hd: 12, h: 90, top:'#2a3347', side1:'#1f2739', side2:'#161d2b' });
+  drawCrate({ x: PREP.minX-12, y: 250, hw: 12, hd: 250, h: 90, top:'#2a3347', side1:'#1f2739', side2:'#161d2b' });
+  drawCrate({ x: PREP.maxX+12, y: 250, hw: 12, hd: 250, h: 90, top:'#2a3347', side1:'#1f2739', side2:'#161d2b' });
+
+  const items = [];
+  for (const m of PREP.machines){
+    items.push({ d: m.x+m.y, fn: () => drawArcade(m) });
   }
 
-  if (me.role === 'hunter' && mouse.down && !isModalOpen() && !isLockedHunter) shoot();
+  // other players (same role only)
+  for (const e of state.game.entities){
+    if (e.id === state.youId) continue;
+    if (e.role !== me.role) continue;
+    items.push({ d: e.x+e.y, fn: () => {
+      drawHumanoid(e.x, e.y, '#eef2f9', performance.now()/80);
+      const lbl = project(e.x, e.y, 46);
+      ctx.save();
+      ctx.font = '700 12px Segoe UI, system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#c2cfe0';
+      ctx.fillText(state.lobby && state.lobby.players.find(p => p.id === e.id)?.name || '', lbl.x, lbl.y);
+      ctx.restore();
+    }});
+  }
 
-  cam.x += (me.x - cam.x) * Math.min(1, dt * 8);
-  cam.y += (me.y - cam.y) * Math.min(1, dt * 8);
+  // local player
+  items.push({ d: me.x+me.y, fn: () => {
+    drawHumanoid(me.x, me.y, '#eef2f9', performance.now()/80);
+    const b = project(me.x, me.y, 0); const z = cam.zoom;
+    ctx.save(); ctx.globalAlpha = 0.85;
+    ctx.strokeStyle = '#7fe3ff'; ctx.lineWidth = 2;
+    ctx.setLineDash([6*z, 5*z]);
+    ctx.lineDashOffset = -performance.now()*0.012;
+    ctx.beginPath(); ctx.ellipse(b.x, b.y, 17*z, 8.5*z, 0, 0, TAU); ctx.stroke();
+    ctx.restore();
+  }});
+
+  items.sort((a,b) => a.d-b.d); items.forEach(i => i.fn());
+
+  if (state.nearMachine){
+    const pr = project(state.nearMachine.x, state.nearMachine.y, state.nearMachine.h+30);
+    drawFloatLabel(pr.x, pr.y, 'E');
+  }
+
+  // phase timer
+  const now = Date.now();
+  let remaining = 0;
+  if (isPrepPhase() && state.game.prepEndsAt) remaining = Math.max(0, Math.ceil((state.game.prepEndsAt - now)/1000));
+  else if (isHidePhase() && state.game.hideEndsAt) remaining = Math.max(0, Math.ceil((state.game.hideEndsAt - now)/1000));
+  ctx.save();
+  ctx.textAlign = 'center';
+  ctx.font = '700 22px Segoe UI, system-ui, sans-serif';
+  ctx.fillStyle = '#eef2f9';
+  ctx.fillText(`До выхода: ${remaining}`, W*0.5, 92);
+  ctx.restore();
+}
+
+function drawArcade(m){
+  const c = m.id === 'minesweeper'
+    ? { top:'#3d7ea8', side1:'#2b5c7d', side2:'#1f455e' }
+    : { top:'#a97de0', side1:'#8660b8', side2:'#684a90' };
+  drawCrate({ x:m.x, y:m.y, hw:m.hw, hd:m.hd, h:m.h, ...c });
+  // screen label
+  const top = project(m.x, m.y, m.h + 40);
+  ctx.save();
+  ctx.font = '800 18px Segoe UI, system-ui, sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  const g = ctx.createRadialGradient(top.x, top.y-40, 5, top.x, top.y-40, 60*cam.zoom);
+  g.addColorStop(0, 'rgba(90,200,255,0.6)');
+  g.addColorStop(1, 'rgba(90,200,255,0)');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(top.x, top.y-40, 60*cam.zoom, 0, TAU); ctx.fill();
+  ctx.fillStyle = '#dff4ff';
+  ctx.fillText(m.label, top.x, top.y-40);
+  ctx.restore();
+}
+
+/* ------- main game update ------- */
+function updateMainGame(dt){
+  const g = state.game;
+  if (!g || !g.entities) return;
+  const me = localEntity();
+  if (!me) return;
+
+  if (!g.over){
+    const { ix, iy } = getInput();
+    const moving = ix !== 0 || iy !== 0;
+    if (moving){
+      const inv = Math.SQRT1_2;
+      const sp = 190 * (state.localDisguised ? 0.72 : 1);
+      me.x += (ix+iy)*inv*sp*dt;
+      me.y += (-ix+iy)*inv*sp*dt;
+      me.fx = (ix+iy)*inv; me.fy = (-ix+iy)*inv;
+    }
+    me.x = clamp(me.x, -g.R+16, g.R-16);
+    me.y = clamp(me.y, -g.R+16, g.R-16);
+  }
+
+  const now = performance.now();
+  if (now - state.lastInputSent > 50){
+    state.lastInputSent = now;
+    send({ type: 'input', x: me.x, y: me.y, fx: me.fx, fy: me.fy,
+           disguised: state.localDisguised, disguiseColor: state.localDisguiseColor });
+  }
+
+  if (me.role === 'hunter' && mouse.down && !isModalOpen()) shoot();
+
+  cam.x += (me.x - cam.x) * Math.min(1, dt*8);
+  cam.y += (me.y - cam.y) * Math.min(1, dt*8);
 
   if (me.role === 'hider' && !state.localDisguised){
     state.nearCrate = findNearCrate(g, me.x, me.y, 80);
   } else {
     state.nearCrate = null;
   }
-
-  syncHunterLockUI();
 }
 
 function findNearCrate(g, x, y, baseReach){
   let best = null, bd = 1e9;
   for (const c of g.crates){
-    const d = Math.hypot(c.x - x, c.y - y);
+    const d = Math.hypot(c.x-x, c.y-y);
     const reach = Math.max(c.hw, c.hd) + baseReach;
     if (d < reach && d < bd){ bd = d; best = c; }
   }
   return best;
 }
-
 function shoot(){
   const me = localEntity();
   if (!me || !state.game || state.game.over) return;
-  if (me.role !== 'hunter' || !state.game.huntersReleased) return;
+  if (me.role !== 'hunter' || !isMainPhase()) return;
   if (me.shootCd > 0) return;
   const target = screenToWorld(mouse.x, mouse.y);
-  let dx = target.x - me.x, dy = target.y - me.y;
-  const len = Math.hypot(dx, dy) || 1;
-  dx /= len; dy /= len;
+  let dx = target.x-me.x, dy = target.y-me.y;
+  const len = Math.hypot(dx, dy) || 1; dx /= len; dy /= len;
   send({ type: 'shoot', dx, dy });
   me.shootCd = 0.3;
 }
 
+/* ------- interaction ------- */
 function tryInteract(){
   if (isModalOpen()) return;
   if (state.screen === 'lobby' && lobbyWorld){
@@ -831,49 +843,64 @@ function tryInteract(){
     if (d < 140 && state.isHost) openSettings();
     return;
   }
-  if (state.screen === 'game' && state.game){
-    const me = localEntity();
-    if (!me || me.role !== 'hider') return;
-    if (state.localDisguised){
-      state.localDisguised = false;
-      state.localDisguiseColor = null;
-      sendInput(); updateGameHud();
-    } else {
-      const c = findNearCrate(state.game, me.x, me.y, 80);
-      if (c){
-        state.localDisguised = true;
-        state.localDisguiseColor = c.top;
-        sendInput(); updateGameHud();
-      }
+  if (state.screen !== 'game' || !state.game) return;
+
+  // prep room: machine interaction
+  if (isInPrepRoom()){
+    if (state.nearMachine){
+      if (state.nearMachine.id === 'minesweeper') openMinesweeper();
+      else if (state.nearMachine.id === 'tictactoe') openTicTacToe();
+    }
+    return;
+  }
+
+  // main/hide on map: disguise
+  const me = localEntity();
+  if (!me || me.role !== 'hider') return;
+  if (state.localDisguised){
+    state.localDisguised = false;
+    state.localDisguiseColor = null;
+    send({ type: 'input', x: me.x, y: me.y, fx: me.fx, fy: me.fy, disguised: false, disguiseColor: null });
+    updateGameHud();
+  } else {
+    const c = findNearCrate(state.game, me.x, me.y, 80);
+    if (c){
+      state.localDisguised = true;
+      state.localDisguiseColor = c.top;
+      send({ type: 'input', x: me.x, y: me.y, fx: me.fx, fy: me.fy, disguised: true, disguiseColor: c.top });
+      updateGameHud();
     }
   }
 }
 
-/* ================= HUD ================= */
+/* ------- HUD ------- */
 function updateGameHud(){
   if (!state.game) return;
   const me = localEntity();
   if (!me) return;
 
-  const isLockedHunter = me.role === 'hunter' && !state.game.huntersReleased;
-
   const roleEl = $('#gameRole');
+  const phase = state.game.phase;
+
   if (me.role === 'hunter'){
     roleEl.textContent = 'ВЫ — ОХОТНИК';
     roleEl.className = 'role hunter';
-    $('#gameHint').textContent = isLockedHunter
-      ? 'Ждём остальных... Разомнись в сапёре!'
-      : 'ЛКМ — выстрелить водой · WASD — ходить';
-    canvas.style.cursor = isLockedHunter ? 'default' : 'crosshair';
+    if (phase === 'main'){
+      $('#gameHint').textContent = 'ЛКМ — выстрелить водой · WASD — ходить';
+      canvas.style.cursor = 'crosshair';
+    } else {
+      $('#gameHint').textContent = 'Ожидание. Подойди к автомату и нажми E';
+      canvas.style.cursor = 'default';
+    }
   } else {
     roleEl.textContent = state.localDisguised ? 'ВЫ — ПРЯЧУЩИЙСЯ (замаскирован)' : 'ВЫ — ПРЯЧУЩИЙСЯ';
     roleEl.className = 'role hider';
-    if (state.localDisguised){
-      $('#gameHint').textContent = 'E — снять маскировку · WASD — ходить';
-    } else if (state.nearCrate){
-      $('#gameHint').textContent = 'E — замаскироваться под этот блок';
+    if (phase === 'main' || phase === 'hide'){
+      if (state.localDisguised) $('#gameHint').textContent = 'E — снять маскировку · WASD — ходить';
+      else if (state.nearCrate) $('#gameHint').textContent = 'E — замаскироваться под этот блок';
+      else $('#gameHint').textContent = 'Подойди к блоку и нажми E';
     } else {
-      $('#gameHint').textContent = 'Подойди к блоку и нажми E';
+      $('#gameHint').textContent = 'Подойди к автомату и нажми E';
     }
     canvas.style.cursor = 'default';
   }
@@ -882,208 +909,12 @@ function updateGameHud(){
   $('#gameInfo').textContent = 'Прячущихся: ' + hiders;
 
   const t = Math.floor(state.game.time);
-  $('#gameTimer').textContent =
-    String(Math.floor(t/60)).padStart(2,'0') + ':' + String(t%60).padStart(2,'0');
+  $('#gameTimer').textContent = String(Math.floor(t/60)).padStart(2,'0') + ':' + String(t%60).padStart(2,'0');
 }
 
-function syncHunterLockUI(){
-  if (!state.game){ hideMinesweeper(); return; }
-  const me = localEntity();
-  if (!me){ hideMinesweeper(); return; }
-  const locked = me.role === 'hunter' && !state.game.huntersReleased;
-  if (locked){
-    if ($('#panelMinesweeper').classList.contains('hidden')) showMinesweeper();
-    if (state.localLockEnd > 0){
-      const remaining = Math.max(0, Math.ceil((state.localLockEnd - performance.now()) / 1000));
-      $('#msTimer').textContent = remaining;
-    }
-  } else {
-    hideMinesweeper();
-  }
-}
-
-/* ================= roulette ================= */
-let rouletteTimer = 0;
-
-function showRoulette(msg){
-  const names = msg.names || [];
-  const ids = msg.ids || [];
-  const hunterId = msg.hunterId;
-  const hunterIdx = ids.indexOf(hunterId);
-  const duration = msg.duration || 3000;
-
-  $('#panelRoulette').classList.remove('hidden');
-  const el = $('#rouletteName');
-  el.classList.remove('winner');
-
-  const startTime = performance.now();
-  let lastStep = startTime;
-  let currentIdx = 0;
-  el.textContent = names[0] || '...';
-
-  cancelAnimationFrame(rouletteTimer);
-
-  function tick(){
-    const now = performance.now();
-    const elapsed = now - startTime;
-    const t = Math.min(1, elapsed / duration);
-
-    if (t >= 1){
-      el.textContent = names[hunterIdx >= 0 ? hunterIdx : 0] || '...';
-      el.classList.add('winner');
-      setTimeout(() => {
-        el.classList.remove('winner');
-        $('#panelRoulette').classList.add('hidden');
-        if (state.pendingGameStart){
-          const m = state.pendingGameStart;
-          state.pendingGameStart = null;
-          applyGameStart(m);
-        }
-      }, 500);
-      return;
-    }
-
-    const stepDur = 40 + Math.pow(t, 3) * 400;
-    if (now - lastStep > stepDur){
-      lastStep = now;
-      currentIdx = (currentIdx + 1) % names.length;
-      el.textContent = names[currentIdx];
-    }
-    rouletteTimer = requestAnimationFrame(tick);
-  }
-  tick();
-}
-
-function closeRoulette(force){
-  cancelAnimationFrame(rouletteTimer);
-  $('#panelRoulette').classList.add('hidden');
-  $('#rouletteName').classList.remove('winner');
-  if (force) state.pendingGameStart = null;
-}
-
-/* ================= minesweeper ================= */
-let msInstance = null;
-
-function createMinesweeper(){
-  const size = 9;
-  const mineCount = 10;
-  const grid = [];
-  const revealed = [];
-  const flagged = [];
-  let gameOver = false, won = false, firstClick = true;
-
-  for (let y=0;y<size;y++){
-    grid.push(new Array(size).fill(0));
-    revealed.push(new Array(size).fill(false));
-    flagged.push(new Array(size).fill(false));
-  }
-
-  function placeMines(sx, sy){
-    let placed = 0, attempts = 0;
-    while (placed < mineCount && attempts < 1000){
-      attempts++;
-      const x = Math.floor(Math.random()*size);
-      const y = Math.floor(Math.random()*size);
-      if (grid[y][x] === -1) continue;
-      if (Math.abs(x-sx) <= 1 && Math.abs(y-sy) <= 1) continue;
-      grid[y][x] = -1; placed++;
-    }
-    for (let y=0;y<size;y++){
-      for (let x=0;x<size;x++){
-        if (grid[y][x] === -1) continue;
-        let cnt = 0;
-        for (let dy=-1;dy<=1;dy++) for (let dx=-1;dx<=1;dx++){
-          const ny=y+dy, nx=x+dx;
-          if (ny>=0 && ny<size && nx>=0 && nx<size && grid[ny][nx] === -1) cnt++;
-        }
-        grid[y][x] = cnt;
-      }
-    }
-  }
-
-  function reveal(x, y){
-    if (gameOver || won) return;
-    if (x<0 || x>=size || y<0 || y>=size) return;
-    if (revealed[y][x] || flagged[y][x]) return;
-    if (firstClick){ firstClick = false; placeMines(x, y); }
-    revealed[y][x] = true;
-    if (grid[y][x] === -1){ gameOver = true; render(); return; }
-    if (grid[y][x] === 0){
-      for (let dy=-1;dy<=1;dy++) for (let dx=-1;dx<=1;dx++){
-        if (dx === 0 && dy === 0) continue;
-        reveal(x+dx, y+dy);
-      }
-    }
-    checkWin();
-    render();
-  }
-
-  function toggleFlag(x, y){
-    if (gameOver || won) return;
-    if (x<0 || x>=size || y<0 || y>=size) return;
-    if (revealed[y][x]) return;
-    flagged[y][x] = !flagged[y][x];
-    render();
-  }
-
-  function checkWin(){
-    for (let y=0;y<size;y++) for (let x=0;x<size;x++){
-      if (grid[y][x] !== -1 && !revealed[y][x]) return;
-    }
-    won = true;
-  }
-
-  function render(){
-    const wrap = $('#msGrid');
-    if (!wrap) return;
-    wrap.innerHTML = '';
-    wrap.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
-    for (let y=0;y<size;y++){
-      for (let x=0;x<size;x++){
-        const cell = document.createElement('button');
-        cell.className = 'ms-cell';
-        if (revealed[y][x]){
-          cell.classList.add('revealed');
-          if (grid[y][x] === -1){ cell.textContent = '💥'; cell.classList.add('mine'); }
-          else if (grid[y][x] > 0){ cell.textContent = grid[y][x]; cell.classList.add('n'+grid[y][x]); }
-        } else if (flagged[y][x]){
-          cell.textContent = '🚩'; cell.classList.add('flagged');
-        }
-        cell.onclick = () => reveal(x, y);
-        cell.oncontextmenu = e => { e.preventDefault(); toggleFlag(x, y); };
-        wrap.appendChild(cell);
-      }
-    }
-    const s = $('#msStatus');
-    if (won) s.textContent = '🏆 Победа! Все мины найдены.';
-    else if (gameOver) s.textContent = '💥 Мина! Сбрось, чтобы попробовать снова.';
-    else s.textContent = '';
-  }
-
-  function reset(){
-    gameOver = false; won = false; firstClick = true;
-    for (let y=0;y<size;y++) for (let x=0;x<size;x++){
-      grid[y][x] = 0;
-      revealed[y][x] = false;
-      flagged[y][x] = false;
-    }
-    render();
-  }
-
-  render();
-  return { reset };
-}
-
-function showMinesweeper(){
-  $('#panelMinesweeper').classList.remove('hidden');
-}
-function hideMinesweeper(){
-  $('#panelMinesweeper').classList.add('hidden');
-}
-
-/* ================= drawing ================= */
+/* ========= rendering ========= */
 function drawFloor(x0, y0, x1, y1, base, grid, step){
-  poly([project(x0,y0,0), project(x1,y0,0), project(x1,y1,0), project(x0,y1,0)], base);
+  poly([project(x0,y0,0),project(x1,y0,0),project(x1,y1,0),project(x0,y1,0)], base);
   ctx.strokeStyle = grid; ctx.lineWidth = 1; ctx.beginPath();
   for (let x = Math.ceil(x0/step)*step; x <= x1; x += step){
     const a = project(x,y0,0), b = project(x,y1,0);
@@ -1095,16 +926,13 @@ function drawFloor(x0, y0, x1, y1, base, grid, step){
   }
   ctx.stroke();
 }
-
 function poly(pts, fill, stroke, lw){
-  ctx.beginPath();
-  ctx.moveTo(pts[0].x, pts[0].y);
+  ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
   for (let i=1;i<pts.length;i++) ctx.lineTo(pts[i].x, pts[i].y);
   ctx.closePath();
   if (fill){ ctx.fillStyle = fill; ctx.fill(); }
   if (stroke){ ctx.strokeStyle = stroke; ctx.lineWidth = lw||1; ctx.stroke(); }
 }
-
 function drawCrate(c, opts){
   opts = opts || {};
   const x=c.x, y=c.y, hw=c.hw, hd=c.hd, h=c.h;
@@ -1113,15 +941,12 @@ function drawCrate(c, opts){
   poly([project(x-hw,y+hd,0),project(x+hw,y+hd,0),project(x+hw,y+hd,h),project(x-hw,y+hd,h)],c.side2,'rgba(0,0,0,0.28)',1);
   poly([project(x-hw,y-hd,h),project(x+hw,y-hd,h),project(x+hw,y+hd,h),project(x-hw,y+hd,h)],c.top,'rgba(0,0,0,0.28)',1);
   if (opts.highlight){
-    ctx.save();
-    ctx.globalAlpha = opts.highlight;
-    ctx.shadowColor = opts.glow || '#7fe3ff';
-    ctx.shadowBlur = 14;
+    ctx.save(); ctx.globalAlpha = opts.highlight;
+    ctx.shadowColor = opts.glow || '#7fe3ff'; ctx.shadowBlur = 14;
     poly([project(x-hw,y-hd,h),project(x+hw,y-hd,h),project(x+hw,y+hd,h),project(x-hw,y+hd,h)],null,opts.glow||'#7fe3ff',2.5);
     ctx.restore();
   }
 }
-
 function drawHumanoid(px, py, color, phase, opts){
   opts = opts || {};
   const z = cam.zoom;
@@ -1162,65 +987,52 @@ function drawHumanoid(px, py, color, phase, opts){
     ctx.restore();
     if (opts.flash > 0){
       const a = -0.38;
-      const mx = hx + Math.cos(a) * 12*z;
-      const my = hy + Math.sin(a) * 12*z - 4*z;
-      ctx.save();
-      ctx.globalAlpha = clamp(opts.flash * 9, 0, 1);
-      const g = ctx.createRadialGradient(mx,my,0,mx,my,12*z);
-      g.addColorStop(0, 'rgba(200,245,255,0.95)');
-      g.addColorStop(1, 'rgba(90,200,255,0)');
-      ctx.fillStyle = g;
-      ctx.beginPath(); ctx.arc(mx,my,12*z,0,TAU); ctx.fill();
+      const mx = hx + Math.cos(a)*12*z;
+      const my = hy + Math.sin(a)*12*z - 4*z;
+      ctx.save(); ctx.globalAlpha = clamp(opts.flash*9, 0, 1);
+      const g = ctx.createRadialGradient(mx, my, 0, mx, my, 12*z);
+      g.addColorStop(0, 'rgba(200,245,255,0.95)'); g.addColorStop(1, 'rgba(90,200,255,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(mx, my, 12*z, 0, TAU); ctx.fill();
       ctx.restore();
     }
   }
 }
-
 function drawProjectile(p){
-  const base = project(p.x, p.y, 0);
-  const z = cam.zoom;
+  const base = project(p.x, p.y, 0); const z = cam.zoom;
   ctx.save(); ctx.globalAlpha = 0.25; ctx.fillStyle = '#000';
   ctx.beginPath(); ctx.ellipse(base.x, base.y, 5*z, 2.6*z, 0, 0, TAU); ctx.fill();
   ctx.restore();
   const sp = project(p.x, p.y, p.z);
   const g = ctx.createRadialGradient(sp.x-1.5*z, sp.y-1.5*z, 0.5*z, sp.x, sp.y, 7*z);
   g.addColorStop(0, '#f2ffff'); g.addColorStop(0.45, '#7fdcff'); g.addColorStop(1, '#2b8fd0');
-  ctx.fillStyle = g;
-  ctx.beginPath(); ctx.arc(sp.x, sp.y, 5.6*z, 0, TAU); ctx.fill();
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(sp.x, sp.y, 5.6*z, 0, TAU); ctx.fill();
 }
-
 function drawSplash(f){
-  const t = clamp(f.t / f.max, 0, 1);
-  const p = project(f.x, f.y, f.z);
-  const z = cam.zoom;
+  const t = clamp(f.t/f.max, 0, 1);
+  const p = project(f.x, f.y, f.z); const z = cam.zoom;
   const seed = (f.x*0.13 + f.y*0.07) % TAU;
-  ctx.save(); ctx.globalAlpha = 1 - t;
+  ctx.save(); ctx.globalAlpha = 1-t;
   ctx.strokeStyle = '#7fe3ff'; ctx.lineWidth = 2.4*z;
   ctx.beginPath(); ctx.arc(p.x, p.y, (7+t*30)*z, 0, TAU); ctx.stroke();
   ctx.fillStyle = '#bfeaff';
   for (let i=0;i<5;i++){
-    const a = (i/5)*TAU + seed;
-    const r = (10+t*34)*z;
+    const a = (i/5)*TAU + seed; const r = (10+t*34)*z;
     ctx.beginPath(); ctx.arc(p.x+Math.cos(a)*r, p.y+Math.sin(a)*r*0.6, 2.2*z*(1-t), 0, TAU); ctx.fill();
   }
   ctx.restore();
 }
-
 function drawFloatLabel(sx, sy, text){
   ctx.save();
   ctx.font = '700 15px Segoe UI, system-ui, sans-serif';
-  const w = ctx.measureText(text).width + 22;
-  const h = 30;
+  const w = ctx.measureText(text).width + 22, h = 30;
   ctx.fillStyle = 'rgba(14,19,27,0.92)';
   ctx.strokeStyle = '#5ac8ff'; ctx.lineWidth = 1.5;
-  roundRect(sx-w/2, sy-h/2, w, h, 9);
-  ctx.fill(); ctx.stroke();
+  roundRect(sx-w/2, sy-h/2, w, h, 9); ctx.fill(); ctx.stroke();
   ctx.fillStyle = '#dff4ff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillText(text, sx, sy+1);
   ctx.restore();
 }
 
-/* ================= render game ================= */
 function drawEntity(e){
   if (e.role === 'hider' && e.disguised && e.disguiseColor){
     const col = colorByTop(e.disguiseColor);
@@ -1231,8 +1043,7 @@ function drawEntity(e){
     });
   }
   if (e.id === state.youId){
-    const b = project(e.x, e.y, 0);
-    const z = cam.zoom;
+    const b = project(e.x, e.y, 0); const z = cam.zoom;
     ctx.save(); ctx.globalAlpha = 0.85;
     ctx.strokeStyle = e.role === 'hunter' ? '#ff9d94' : '#7fe3ff';
     ctx.lineWidth = 2;
@@ -1241,16 +1052,20 @@ function drawEntity(e){
     ctx.beginPath(); ctx.ellipse(b.x, b.y, 17*z, 8.5*z, 0, 0, TAU); ctx.stroke();
     ctx.restore();
   }
-  // подпись
-  const lbl = project(e.x, e.y, 46);
-  const pl = state.lobby && state.lobby.players.find(p => p.id === e.id);
-  if (pl){
-    ctx.save();
-    ctx.font = '700 12px Segoe UI, system-ui, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillStyle = e.id === state.youId ? '#7fe3ff' : '#c2cfe0';
-    ctx.fillText(pl.name, lbl.x, lbl.y);
-    ctx.restore();
+  // name display rules
+  const phase = state.game.phase;
+  const showName = (phase !== 'main' && phase !== 'hide') || e.role === 'hunter';
+  if (showName){
+    const pl = state.lobby && state.lobby.players.find(p => p.id === e.id);
+    if (pl){
+      const lbl = project(e.x, e.y, 46);
+      ctx.save();
+      ctx.font = '700 12px Segoe UI, system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = e.id === state.youId ? '#7fe3ff' : '#c2cfe0';
+      ctx.fillText(pl.name, lbl.x, lbl.y);
+      ctx.restore();
+    }
   }
 }
 
@@ -1261,27 +1076,26 @@ function renderGame(){
   drawCrate({ x:0, y:-g.R-16, hw:g.R, hd:16, h:120, top:'#1e2637', side1:'#161d2b', side2:'#101623' });
   drawCrate({ x:-g.R-16, y:0, hw:16, hd:g.R, h:120, top:'#1e2637', side1:'#161d2b', side2:'#101623' });
 
+  const me = localEntity();
   const items = [];
   for (const c of g.crates){
     const isNear = c === state.nearCrate;
-    items.push({ d: c.x + c.y, fn: () => drawCrate(c, isNear ? {highlight: 0.7, glow: '#7fe3ff'} : null) });
+    items.push({ d: c.x+c.y, fn: () => drawCrate(c, isNear ? {highlight:0.7, glow:'#7fe3ff'} : null) });
   }
   for (const e of g.entities){
     if (e.id === state.youId){
       const copy = { ...e, disguised: state.localDisguised, disguiseColor: state.localDisguiseColor };
-      items.push({ d: copy.x + copy.y, fn: () => drawEntity(copy) });
+      items.push({ d: copy.x+copy.y, fn: () => drawEntity(copy) });
     } else {
-      items.push({ d: e.x + e.y, fn: () => drawEntity(e) });
+      items.push({ d: e.x+e.y, fn: () => drawEntity(e) });
     }
   }
-  for (const p of g.projectiles) items.push({ d: p.x + p.y, fn: () => drawProjectile(p) });
-  items.sort((a,b) => a.d - b.d);
-  items.forEach(i => i.fn());
-
+  for (const p of g.projectiles) items.push({ d: p.x+p.y, fn: () => drawProjectile(p) });
+  items.sort((a,b) => a.d-b.d); items.forEach(i => i.fn());
   for (const f of g.effects) drawSplash(f);
 
-  if (state.nearCrate && localEntity() && localEntity().role === 'hider' && !state.localDisguised){
-    const pr = project(state.nearCrate.x, state.nearCrate.y, state.nearCrate.h + 30);
+  if (state.nearCrate && me && me.role === 'hider' && !state.localDisguised){
+    const pr = project(state.nearCrate.x, state.nearCrate.y, state.nearCrate.h+30);
     drawFloatLabel(pr.x, pr.y, 'E');
   }
 
@@ -1296,7 +1110,7 @@ function renderGame(){
   }
 
   if (g.over){
-    const a = Math.min(1, g.overTime * 2);
+    const a = Math.min(1, g.overTime*2);
     const remaining = Math.max(0, Math.ceil(5 - g.overTime));
     ctx.save(); ctx.globalAlpha = a;
     ctx.fillStyle = 'rgba(8,12,18,0.72)';
@@ -1312,42 +1126,35 @@ function renderGame(){
   }
 }
 
-/* ================= background ================= */
+/* ========= background ========= */
 let bgCrates = null;
 function initBackground(){
-  const rnd = (()=>{let a=777;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};})();
+  const rnd = (() => { let a=777; return () => { a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; })();
   bgCrates = [];
   for (let i=0;i<30;i++){
-    const x = (rnd()-0.5)*1500;
-    const y = (rnd()-0.5)*1500;
-    const hw = 18+rnd()*14;
-    const hd = 18+rnd()*14;
-    const h = 28+rnd()*44;
+    const x=(rnd()-0.5)*1500, y=(rnd()-0.5)*1500;
+    const hw=18+rnd()*14, hd=18+rnd()*14, h=28+rnd()*44;
     const c = BLOCK_COLORS[Math.floor(rnd()*BLOCK_COLORS.length)];
     bgCrates.push({ x, y, hw, hd, h, top:c.top, side1:c.side1, side2:c.side2 });
   }
 }
 function renderBackground(){
   const t = performance.now()/1000;
-  cam.x = Math.sin(t*0.11)*300;
-  cam.y = Math.cos(t*0.085)*300;
-  cam.zoom = 0.72;
+  cam.x = Math.sin(t*0.11)*300; cam.y = Math.cos(t*0.085)*300; cam.zoom = 0.72;
   drawFloor(-950,-950,950,950,'#101722','rgba(255,255,255,0.035)',50);
-  const list = bgCrates.slice().sort((a,b)=>(a.x+a.y)-(b.x+b.y));
+  const list = bgCrates.slice().sort((a,b) => (a.x+a.y)-(b.x+b.y));
   for (const c of list) drawCrate(c);
-  const hx = Math.sin(t*0.33)*520;
-  const hy = Math.cos(t*0.26)*520;
+  const hx = Math.sin(t*0.33)*520, hy = Math.cos(t*0.26)*520;
   drawHumanoid(hx, hy, '#eef2f9', t*9);
 }
 
-/* ================= settings / debug ================= */
+/* ========= settings / debug ========= */
 function openSettings(){
   const l = state.lobby;
   if (!l || !state.isHost) return;
   const s = l.settings;
   $('#selMap').value = s.mapMode;
-  const sel = $('#selHunter');
-  sel.innerHTML = '';
+  const sel = $('#selHunter'); sel.innerHTML = '';
   sel.add(new Option('Случайно', 'random'));
   for (let i=1; i<=s.playerCount; i++){
     const p = l.players[i-1];
@@ -1362,15 +1169,11 @@ function openSettings(){
 function closeSettings(){ $('#panelSettings').classList.add('hidden'); }
 function sendSettings(){
   if (!state.isHost || !state.lobby) return;
-  send({
-    type: 'updateSettings',
-    settings: {
-      mapMode: $('#selMap').value,
-      hunter: $('#selHunter').value,
-      playerCount: parseInt($('#rngCount').value, 10),
-      debug: $('#chkDebug').checked,
-    }
-  });
+  send({ type: 'updateSettings', settings: {
+    mapMode: $('#selMap').value, hunter: $('#selHunter').value,
+    playerCount: parseInt($('#rngCount').value, 10),
+    debug: $('#chkDebug').checked,
+  }});
 }
 function toggleDebug(){
   if (!state.debugEnabled || state.screen !== 'game') return;
@@ -1380,50 +1183,281 @@ function toggleDebug(){
 }
 function closeDebug(){ $('#panelDebug').classList.add('hidden'); }
 function updateDebugPanel(){
-  const me = localEntity();
-  if (!me) return;
+  const me = localEntity(); if (!me) return;
   $('#btnSwitchRole').textContent = me.role === 'hunter' ? 'Стать прячущимся' : 'Стать охотником';
 }
 
-/* ================= main loop ================= */
+/* ========= roulette ========= */
+let rouletteTimer = 0;
+function showRoulette(msg){
+  const names = msg.names || [], ids = msg.ids || [];
+  const hunterIdx = ids.indexOf(msg.hunterId);
+  const duration = msg.duration || 3000;
+  $('#panelRoulette').classList.remove('hidden');
+  const el = $('#rouletteName');
+  el.classList.remove('winner');
+  const startTime = performance.now();
+  let lastStep = startTime, currentIdx = 0;
+  el.textContent = names[0] || '...';
+  cancelAnimationFrame(rouletteTimer);
+  function tick(){
+    const now = performance.now();
+    const elapsed = now - startTime;
+    const t = Math.min(1, elapsed / duration);
+    if (t >= 1){
+      el.textContent = names[hunterIdx >= 0 ? hunterIdx : 0] || '...';
+      el.classList.add('winner');
+      setTimeout(() => {
+        el.classList.remove('winner');
+        $('#panelRoulette').classList.add('hidden');
+        if (state.pendingGameStart){
+          const m = state.pendingGameStart; state.pendingGameStart = null;
+          applyGameStart(m);
+        }
+      }, 500);
+      return;
+    }
+    const stepDur = 40 + Math.pow(t, 3) * 400;
+    if (now - lastStep > stepDur){
+      lastStep = now;
+      currentIdx = (currentIdx + 1) % names.length;
+      el.textContent = names[currentIdx];
+    }
+    rouletteTimer = requestAnimationFrame(tick);
+  }
+  tick();
+}
+function closeRoulette(force){
+  cancelAnimationFrame(rouletteTimer);
+  $('#panelRoulette').classList.add('hidden');
+  $('#rouletteName').classList.remove('winner');
+  if (force) state.pendingGameStart = null;
+}
+
+/* ========= minesweeper ========= */
+function createMinesweeper(){
+  const size = 9, mineCount = 10;
+  const grid = [], revealed = [], flagged = [];
+  let gameOver = false, won = false, firstClick = true;
+  for (let y=0;y<size;y++){ grid.push(new Array(size).fill(0)); revealed.push(new Array(size).fill(false)); flagged.push(new Array(size).fill(false)); }
+  function placeMines(sx, sy){
+    let placed = 0, attempts = 0;
+    while (placed < mineCount && attempts < 1000){
+      attempts++;
+      const x = Math.floor(Math.random()*size), y = Math.floor(Math.random()*size);
+      if (grid[y][x] === -1) continue;
+      if (Math.abs(x-sx) <= 1 && Math.abs(y-sy) <= 1) continue;
+      grid[y][x] = -1; placed++;
+    }
+    for (let y=0;y<size;y++) for (let x=0;x<size;x++){
+      if (grid[y][x] === -1) continue;
+      let cnt = 0;
+      for (let dy=-1;dy<=1;dy++) for (let dx=-1;dx<=1;dx++){
+        const ny=y+dy, nx=x+dx;
+        if (ny>=0 && ny<size && nx>=0 && nx<size && grid[ny][nx] === -1) cnt++;
+      }
+      grid[y][x] = cnt;
+    }
+  }
+  function reveal(x, y){
+    if (gameOver || won) return;
+    if (x<0||x>=size||y<0||y>=size) return;
+    if (revealed[y][x] || flagged[y][x]) return;
+    if (firstClick){ firstClick = false; placeMines(x, y); }
+    revealed[y][x] = true;
+    if (grid[y][x] === -1){ gameOver = true; render(); return; }
+    if (grid[y][x] === 0){
+      for (let dy=-1;dy<=1;dy++) for (let dx=-1;dx<=1;dx++){
+        if (dx===0&&dy===0) continue; reveal(x+dx, y+dy);
+      }
+    }
+    checkWin(); render();
+  }
+  function toggleFlag(x, y){
+    if (gameOver || won) return;
+    if (x<0||x>=size||y<0||y>=size) return;
+    if (revealed[y][x]) return;
+    flagged[y][x] = !flagged[y][x]; render();
+  }
+  function checkWin(){
+    for (let y=0;y<size;y++) for (let x=0;x<size;x++){
+      if (grid[y][x] !== -1 && !revealed[y][x]) return;
+    }
+    won = true;
+  }
+  function render(){
+    const wrap = $('#msGrid'); if (!wrap) return;
+    wrap.innerHTML = '';
+    wrap.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+    for (let y=0;y<size;y++) for (let x=0;x<size;x++){
+      const cell = document.createElement('button');
+      cell.className = 'ms-cell';
+      if (revealed[y][x]){
+        cell.classList.add('revealed');
+        if (grid[y][x] === -1){ cell.textContent = '💥'; cell.classList.add('mine'); }
+        else if (grid[y][x] > 0){ cell.textContent = grid[y][x]; cell.classList.add('n'+grid[y][x]); }
+      } else if (flagged[y][x]){
+        cell.textContent = '🚩'; cell.classList.add('flagged');
+      }
+      cell.onclick = () => reveal(x, y);
+      cell.oncontextmenu = e => { e.preventDefault(); toggleFlag(x, y); };
+      wrap.appendChild(cell);
+    }
+    const s = $('#msStatus');
+    if (won) s.textContent = '🏆 Победа!';
+    else if (gameOver) s.textContent = '💥 Мина!';
+    else s.textContent = '';
+  }
+  function reset(){
+    gameOver = false; won = false; firstClick = true;
+    for (let y=0;y<size;y++) for (let x=0;x<size;x++){
+      grid[y][x] = 0; revealed[y][x] = false; flagged[y][x] = false;
+    }
+    render();
+  }
+  render();
+  return { reset };
+}
+
+function openMinesweeper(){
+  if (!state.ms) state.ms = createMinesweeper();
+  $('#panelMinesweeper').classList.remove('hidden');
+}
+function hideMinesweeper(){ $('#panelMinesweeper').classList.add('hidden'); }
+
+/* ========= tic-tac-toe ========= */
+function createTicTacToe(){
+  let board = Array(9).fill(null);
+  let gameOver = false, winner = null;
+
+  const LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+  function checkWinnerFor(b){
+    for (const [a,c,d] of LINES){
+      if (b[a] && b[a] === b[c] && b[a] === b[d]) return b[a];
+    }
+    if (b.every(x => x)) return 'draw';
+    return null;
+  }
+  function minimax(b, isMax){
+    const w = checkWinnerFor(b);
+    if (w === 'X') return -10;
+    if (w === 'O') return 10;
+    if (w === 'draw') return 0;
+    if (isMax){
+      let best = -Infinity;
+      for (let i=0;i<9;i++){
+        if (b[i]) continue;
+        b[i] = 'O'; best = Math.max(best, minimax(b, false)); b[i] = null;
+      }
+      return best;
+    } else {
+      let best = Infinity;
+      for (let i=0;i<9;i++){
+        if (b[i]) continue;
+        b[i] = 'X'; best = Math.min(best, minimax(b, true)); b[i] = null;
+      }
+      return best;
+    }
+  }
+  function aiMove(){
+    let best = -Infinity, bestIdx = -1;
+    for (let i=0;i<9;i++){
+      if (board[i]) continue;
+      board[i] = 'O'; const score = minimax([...board], false); board[i] = null;
+      if (score > best){ best = score; bestIdx = i; }
+    }
+    if (bestIdx >= 0) board[bestIdx] = 'O';
+  }
+  function play(i){
+    if (gameOver || board[i]) return;
+    board[i] = 'X';
+    let w = checkWinnerFor(board);
+    if (w){ gameOver = true; winner = w; render(); return; }
+    aiMove();
+    w = checkWinnerFor(board);
+    if (w){ gameOver = true; winner = w; }
+    render();
+  }
+  function render(){
+    const wrap = $('#tttGrid'); if (!wrap) return;
+    wrap.innerHTML = '';
+    for (let i=0;i<9;i++){
+      const cell = document.createElement('button');
+      cell.className = 'ttt-cell';
+      if (board[i] === 'X'){ cell.textContent = '×'; cell.classList.add('taken','x'); }
+      else if (board[i] === 'O'){ cell.textContent = '○'; cell.classList.add('taken','o'); }
+      cell.onclick = () => play(i);
+      wrap.appendChild(cell);
+    }
+    const s = $('#tttStatus');
+    if (winner === 'X') s.textContent = '🏆 Вы победили!';
+    else if (winner === 'O') s.textContent = '💀 Победил ИИ';
+    else if (winner === 'draw') s.textContent = '🤝 Ничья';
+    else s.textContent = 'Ваш ход (×)';
+  }
+  function reset(){
+    board = Array(9).fill(null); gameOver = false; winner = null; render();
+  }
+  render();
+  return { reset };
+}
+
+function openTicTacToe(){
+  if (!state.ttt) state.ttt = createTicTacToe();
+  $('#panelTicTacToe').classList.remove('hidden');
+}
+function hideTicTacToe(){ $('#panelTicTacToe').classList.add('hidden'); }
+
+/* ========= main loop ========= */
 let lastTime = performance.now();
 function loop(now){
   const dt = Math.min((now-lastTime)/1000, 0.05);
   lastTime = now;
 
-  if (state.screen === 'lobby' && lobbyWorld) updateLobby(dt);
-  else if (state.screen === 'game' && state.game) updateGameClient(dt);
+  // choose update
+  if (state.screen === 'lobby' && lobbyWorld){
+    updateLobby(dt);
+  } else if (state.screen === 'game' && state.game){
+    if (isInPrepRoom()){
+      updatePrepRoom(dt);
+    } else {
+      updateMainGame(dt);
+    }
+  }
 
   const g = ctx.createLinearGradient(0, 0, 0, H);
   g.addColorStop(0, '#121a26'); g.addColorStop(1, '#070a10');
   ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
 
-  if (state.screen === 'menu' || state.screen === 'list') renderBackground();
-  else if (state.screen === 'lobby') renderLobby();
-  else if (state.screen === 'game') renderGame();
+  if (state.screen === 'menu' || state.screen === 'list'){
+    renderBackground();
+  } else if (state.screen === 'lobby'){
+    renderLobby();
+  } else if (state.screen === 'game'){
+    if (isInPrepRoom()) renderPrepRoom();
+    else renderGame();
+  }
 
   requestAnimationFrame(loop);
 }
 
-/* ================= bindings ================= */
+/* ========= bindings ========= */
 $('#inpName').addEventListener('input', e => {
   state.name = e.target.value || 'Игрок';
   send({ type: 'setName', name: state.name });
 });
-
 $('#btnPlay').onclick = () => { renderLobbyList(); setScreen('list'); };
 $('#btnBackMenu').onclick = () => setScreen('menu');
 $('#btnCreateLobby').onclick = () => send({ type: 'createLobby' });
 $('#btnLeaveLobby').onclick = () => send({ type: 'leaveLobby' });
 $('#btnGameMenu').onclick = () => send({ type: 'leaveLobby' });
-
 $('#selMap').onchange = sendSettings;
 $('#selHunter').onchange = sendSettings;
 $('#rngCount').oninput = e => { $('#lblCount').textContent = e.target.value; sendSettings(); };
 $('#chkDebug').onchange = sendSettings;
 $('#btnStartGame').onclick = () => send({ type: 'startGame' });
 $('#btnCloseSettings').onclick = () => closeSettings();
-
 $('#btnSwitchRole').onclick = () => {
   const me = localEntity();
   if (!me) return;
@@ -1431,17 +1465,16 @@ $('#btnSwitchRole').onclick = () => {
   setTimeout(updateDebugPanel, 100);
 };
 $('#btnCloseDebug').onclick = () => closeDebug();
+$('#msReset').onclick = () => { if (state.ms) state.ms.reset(); };
+$('#msClose').onclick = () => hideMinesweeper();
+$('#tttReset').onclick = () => { if (state.ttt) state.ttt.reset(); };
+$('#tttClose').onclick = () => hideTicTacToe();
 
-$('#msReset').onclick = () => {
-  if (state.minesweeper) state.minesweeper.reset();
-};
-
-/* ================= boot ================= */
+/* ========= boot ========= */
 initBackground();
 setScreen('menu');
 connect();
 requestAnimationFrame(loop);
-
 })();
 </script>
 </body>
