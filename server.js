@@ -20,10 +20,9 @@ const CELL = 48;
 const TICK_MS = 1000 / 30;
 const ROULETTE_MS = 3000;
 const PREP_MS = 20000;
-const MAIN_MS = 120000;
-const POST_GAME_MS = 5000;
+const MAIN_MS = 90000;       // 1:30 — длительность охоты
+const POST_GAME_MS = 5000;   // сколько показываем финальный экран до возврата в лобби
 
-/* ===== object definitions ===== */
 const OBJECT_DEFS = {
   block_red:    { w:1, d:1, h:30, solid:true, disguise:true },
   block_blue:   { w:1, d:1, h:30, solid:true, disguise:true },
@@ -45,7 +44,15 @@ const OBJECT_DEFS = {
   stump:   { w:1, d:1, h:18, solid:false, disguise:true },
 };
 
-/* ===== map registry ===== */
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
 function makeLasertag() {
   const rnd = mulberry32(2024);
   const W = 30, H = 30;
@@ -72,22 +79,15 @@ const MAPS = {
   lasertag: makeLasertag(),
   village: {
     name: 'Деревня', width: 30, height: 30, theme: 'grass',
-    objects: [{"x":8,"y":16,"type":"barrel"},{"x":8,"y":15,"type":"box"},{"x":8,"y":14,"type":"box"},{"x":9,"y":14,"type":"box"},{"x":8,"y":13,"type":"stone"},{"x":9,"y":13,"type":"stone"},{"x":13,"y":17,"type":"wood"},{"x":14,"y":16,"type":"grass"},{"x":13,"y":15,"type":"grass"},{"x":14,"y":15,"type":"grass"},{"x":20,"y":10,"type":"pumpkin"},{"x":20,"y":12,"type":"pumpkin"},{"x":18,"y":12,"type":"pumpkin"},{"x":18,"y":11,"type":"pumpkin"},{"x":20,"y":11,"type":"pumpkin"},{"x":17,"y":12,"type":"box"},{"x":16,"y":12,"type":"box"},{"x":15,"y":12,"type":"box"},{"x":15,"y":11,"type":"box"},{"x":15,"y":10,"type":"box"},{"x":16,"y":10,"type":"box"},{"x":16,"y":11,"type":"box"},{"x":17,"y":11,"type":"box"},{"x":16,"y":9,"type":"stone"},{"x":17,"y":9,"type":"stone"},{"x":15,"y":9,"type":"stone"},{"x":21,"y":17,"type":"wood"},{"x":15,"y":23,"type":"wood"},{"x":14,"y":19,"type":"wood"},{"x":17,"y":20,"type":"wood"},{"x":17,"y":17,"type":"wood"},{"x":20,"y":20,"type":"wood"},{"x":19,"y":24,"type":"wood"},{"x":8,"y":17,"type":"barrel"},{"x":16,"y":21,"type":"grass"},{"x":15,"y":21,"type":"grass"},{"x":15,"y":22,"type":"grass"},{"x":16,"y":22,"type":"grass"},{"x":20,"y":18,"type":"grass"},{"x":19,"y":18,"type":"grass"},{"x":8,"y":12,"type":"fence"},{"x":9,"y":12,"type":"fence"},{"x":17,"y":8,"type":"fence"},{"x":16,"y":8,"type":"fence"},{"x":15,"y":8,"type":"fence"},{"x":14,"y":8,"type":"fence"},{"x":3,"y":4,"type":"wood"},{"x":5,"y":4,"type":"wood"},{"x":3,"y":7,"type":"wood"},{"x":5,"y":6,"type":"wood"},{"x":7,"y":5,"type":"wood"},{"x":5,"y":8,"type":"wood"},{"x":1,"y":8,"type":"wood"},{"x":3,"y":9,"type":"wood"},{"x":6,"y":10,"type":"wood"},{"x":7,"y":8,"type":"wood"},{"x":10,"y":13,"type":"pumpkin"},{"x":2,"y":17,"type":"stone"},{"x":2,"y":18,"type":"stone"},{"x":2,"y":19,"type":"stone"},{"x":3,"y":20,"type":"pumpkin"},{"x":4,"y":20,"type":"pumpkin"},{"x":5,"y":18,"type":"pumpkin"},{"x":4,"y":19,"type":"grass"},{"x":3,"y":19,"type":"grass"},{"x":3,"y":18,"type":"grass"},{"x":4,"y":18,"type":"grass"},{"x":3,"y":17,"type":"grass"},{"x":4,"y":17,"type":"grass"},{"x":19,"y":4,"type":"wood"},{"x":21,"y":4,"type":"wood"},{"x":22,"y":6,"type":"wood"},{"x":5,"y":23,"type":"fence"},{"x":6,"y":23,"type":"fence"},{"x":7,"y":23,"type":"fence"},{"x":26,"y":11,"type":"wood"},{"x":26,"y":13,"type":"wood"},{"x":28,"y":11,"type":"wood"},{"x":11,"y":6,"type":"stone"},{"x":11,"y":5,"type":"stone"},{"x":12,"y":5,"type":"box"},{"x":25,"y":3,"type":"box"},{"x":25,"y":2,"type":"box"},{"x":26,"y":2,"type":"stone"},{"x":2,"y":16,"type":"box"},{"x":2,"y":20,"type":"box"},{"x":11,"y":25,"type":"wood"},{"x":8,"y":26,"type":"wood"},{"x":3,"y":26,"type":"wood"},{"x":1,"y":23,"type":"wood"},{"x":10,"y":20,"type":"wood"},{"x":4,"y":12,"type":"wood"},{"x":12,"y":23,"type":"wood"},{"x":14,"y":26,"type":"wood"},{"x":17,"y":25,"type":"wood"},{"x":6,"y":27,"type":"grass"},{"x":4,"y":25,"type":"grass"},{"x":3,"y":24,"type":"grass"},{"x":1,"y":25,"type":"grass"},{"x":2,"y":26,"type":"grass"},{"x":4,"y":28,"type":"grass"},{"x":8,"y":28,"type":"grass"},{"x":9,"y":28,"type":"grass"},{"x":10,"y":27,"type":"grass"},{"x":9,"y":25,"type":"grass"},{"x":9,"y":24,"type":"grass"},{"x":9,"y":22,"type":"grass"},{"x":7,"y":20,"type":"grass"},{"x":6,"y":19,"type":"grass"},{"x":7,"y":16,"type":"grass"},{"x":2,"y":11,"type":"grass"},{"x":2,"y":10,"type":"grass"},{"x":4,"y":11,"type":"grass"},{"x":10,"y":10,"type":"grass"},{"x":13,"y":11,"type":"grass"},{"x":14,"y":13,"type":"grass"},{"x":5,"y":14,"type":"grass"},{"x":3,"y":16,"type":"grass"},{"x":1,"y":14,"type":"grass"},{"x":2,"y":13,"type":"grass"},{"x":9,"y":4,"type":"grass"},{"x":13,"y":4,"type":"grass"},{"x":15,"y":5,"type":"grass"},{"x":14,"y":6,"type":"grass"},{"x":10,"y":7,"type":"grass"},{"x":7,"y":2,"type":"grass"},{"x":5,"y":1,"type":"grass"},{"x":4,"y":1,"type":"grass"},{"x":3,"y":1,"type":"grass"},{"x":1,"y":3,"type":"grass"},{"x":1,"y":4,"type":"grass"},{"x":6,"y":0,"type":"grass"},{"x":9,"y":2,"type":"grass"},{"x":11,"y":3,"type":"grass"},{"x":16,"y":3,"type":"grass"},{"x":18,"y":5,"type":"grass"},{"x":19,"y":6,"type":"grass"},{"x":23,"y":10,"type":"grass"},{"x":23,"y":12,"type":"grass"},{"x":25,"y":16,"type":"grass"},{"x":25,"y":18,"type":"grass"},{"x":28,"y":22,"type":"grass"},{"x":27,"y":23,"type":"grass"},{"x":22,"y":25,"type":"grass"},{"x":24,"y":28,"type":"grass"},{"x":23,"y":28,"type":"grass"},{"x":26,"y":27,"type":"grass"},{"x":24,"y":23,"type":"grass"},{"x":26,"y":19,"type":"grass"},{"x":28,"y":18,"type":"grass"},{"x":28,"y":13,"type":"grass"},{"x":29,"y":10,"type":"grass"},{"x":27,"y":5,"type":"grass"},{"x":24,"y":7,"type":"grass"},{"x":23,"y":13,"type":"grass"},{"x":22,"y":14,"type":"grass"},{"x":20,"y":13,"type":"grass"},{"x":18,"y":14,"type":"grass"},{"x":17,"y":14,"type":"grass"},{"x":21,"y":1,"type":"grass"},{"x":16,"y":2,"type":"grass"},{"x":15,"y":3,"type":"grass"},{"x":23,"y":4,"type":"grass"},{"x":27,"y":6,"type":"grass"},{"x":28,"y":6,"type":"grass"},{"x":29,"y":1,"type":"grass"},{"x":27,"y":1,"type":"grass"},{"x":22,"y":1,"type":"grass"},{"x":19,"y":0,"type":"grass"},{"x":15,"y":0,"type":"grass"},{"x":13,"y":1,"type":"grass"},{"x":11,"y":1,"type":"grass"},{"x":8,"y":0,"type":"grass"},{"x":7,"y":0,"type":"grass"},{"x":7,"y":1,"type":"grass"},{"x":8,"y":2,"type":"grass"},{"x":7,"y":3,"type":"grass"},{"x":9,"y":5,"type":"grass"},{"x":9,"y":6,"type":"grass"},{"x":9,"y":7,"type":"grass"},{"x":9,"y":8,"type":"grass"},{"x":10,"y":8,"type":"grass"}]
+    objects: [
+      {"x":8,"y":16,"type":"barrel"},{"x":8,"y":15,"type":"box"},{"x":8,"y":14,"type":"box"},{"x":9,"y":14,"type":"box"},{"x":8,"y":13,"type":"stone"},{"x":9,"y":13,"type":"stone"},{"x":13,"y":17,"type":"wood"},{"x":14,"y":16,"type":"grass"},{"x":13,"y":15,"type":"grass"},{"x":14,"y":15,"type":"grass"},{"x":20,"y":10,"type":"pumpkin"},{"x":20,"y":12,"type":"pumpkin"},{"x":18,"y":12,"type":"pumpkin"},{"x":18,"y":11,"type":"pumpkin"},{"x":20,"y":11,"type":"pumpkin"},{"x":17,"y":12,"type":"box"},{"x":16,"y":12,"type":"box"},{"x":15,"y":12,"type":"box"},{"x":15,"y":11,"type":"box"},{"x":15,"y":10,"type":"box"},{"x":16,"y":10,"type":"box"},{"x":16,"y":11,"type":"box"},{"x":17,"y":11,"type":"box"},{"x":16,"y":9,"type":"stone"},{"x":17,"y":9,"type":"stone"},{"x":15,"y":9,"type":"stone"},{"x":21,"y":17,"type":"wood"},{"x":15,"y":23,"type":"wood"},{"x":14,"y":19,"type":"wood"},{"x":17,"y":20,"type":"wood"},{"x":17,"y":17,"type":"wood"},{"x":20,"y":20,"type":"wood"},{"x":19,"y":24,"type":"wood"},{"x":8,"y":17,"type":"barrel"},{"x":16,"y":21,"type":"grass"},{"x":15,"y":21,"type":"grass"},{"x":15,"y":22,"type":"grass"},{"x":16,"y":22,"type":"grass"},{"x":20,"y":18,"type":"grass"},{"x":19,"y":18,"type":"grass"},{"x":8,"y":12,"type":"fence"},{"x":9,"y":12,"type":"fence"},{"x":17,"y":8,"type":"fence"},{"x":16,"y":8,"type":"fence"},{"x":15,"y":8,"type":"fence"},{"x":14,"y":8,"type":"fence"},{"x":3,"y":4,"type":"wood"},{"x":5,"y":4,"type":"wood"},{"x":3,"y":7,"type":"wood"},{"x":5,"y":6,"type":"wood"},{"x":7,"y":5,"type":"wood"},{"x":5,"y":8,"type":"wood"},{"x":1,"y":8,"type":"wood"},{"x":3,"y":9,"type":"wood"},{"x":6,"y":10,"type":"wood"},{"x":7,"y":8,"type":"wood"},{"x":10,"y":13,"type":"pumpkin"},{"x":2,"y":17,"type":"stone"},{"x":2,"y":18,"type":"stone"},{"x":2,"y":19,"type":"stone"},{"x":3,"y":20,"type":"pumpkin"},{"x":4,"y":20,"type":"pumpkin"},{"x":5,"y":18,"type":"pumpkin"},{"x":4,"y":19,"type":"grass"},{"x":3,"y":19,"type":"grass"},{"x":3,"y":18,"type":"grass"},{"x":4,"y":18,"type":"grass"},{"x":3,"y":17,"type":"grass"},{"x":4,"y":17,"type":"grass"},{"x":19,"y":4,"type":"wood"},{"x":21,"y":4,"type":"wood"},{"x":22,"y":6,"type":"wood"},{"x":5,"y":23,"type":"fence"},{"x":6,"y":23,"type":"fence"},{"x":7,"y":23,"type":"fence"},{"x":26,"y":11,"type":"wood"},{"x":26,"y":13,"type":"wood"},{"x":28,"y":11,"type":"wood"},{"x":11,"y":6,"type":"stone"},{"x":11,"y":5,"type":"stone"},{"x":12,"y":5,"type":"box"},{"x":25,"y":3,"type":"box"},{"x":25,"y":2,"type":"box"},{"x":26,"y":2,"type":"stone"},{"x":2,"y":16,"type":"box"},{"x":2,"y":20,"type":"box"},{"x":11,"y":25,"type":"wood"},{"x":8,"y":26,"type":"wood"},{"x":3,"y":26,"type":"wood"},{"x":1,"y":23,"type":"wood"},{"x":10,"y":20,"type":"wood"},{"x":4,"y":12,"type":"wood"},{"x":12,"y":23,"type":"wood"},{"x":14,"y":26,"type":"wood"},{"x":17,"y":25,"type":"wood"},{"x":6,"y":27,"type":"grass"},{"x":4,"y":25,"type":"grass"},{"x":3,"y":24,"type":"grass"},{"x":1,"y":25,"type":"grass"},{"x":2,"y":26,"type":"grass"},{"x":4,"y":28,"type":"grass"},{"x":8,"y":28,"type":"grass"},{"x":9,"y":28,"type":"grass"},{"x":10,"y":27,"type":"grass"},{"x":9,"y":25,"type":"grass"},{"x":9,"y":24,"type":"grass"},{"x":9,"y":22,"type":"grass"},{"x":7,"y":20,"type":"grass"},{"x":6,"y":19,"type":"grass"},{"x":7,"y":16,"type":"grass"},{"x":2,"y":11,"type":"grass"},{"x":2,"y":10,"type":"grass"},{"x":4,"y":11,"type":"grass"},{"x":10,"y":10,"type":"grass"},{"x":13,"y":11,"type":"grass"},{"x":14,"y":13,"type":"grass"},{"x":5,"y":14,"type":"grass"},{"x":3,"y":16,"type":"grass"},{"x":1,"y":14,"type":"grass"},{"x":2,"y":13,"type":"grass"},{"x":9,"y":4,"type":"grass"},{"x":13,"y":4,"type":"grass"},{"x":15,"y":5,"type":"grass"},{"x":14,"y":6,"type":"grass"},{"x":10,"y":7,"type":"grass"},{"x":7,"y":2,"type":"grass"},{"x":5,"y":1,"type":"grass"},{"x":4,"y":1,"type":"grass"},{"x":3,"y":1,"type":"grass"},{"x":1,"y":3,"type":"grass"},{"x":1,"y":4,"type":"grass"},{"x":6,"y":0,"type":"grass"},{"x":9,"y":2,"type":"grass"},{"x":11,"y":3,"type":"grass"},{"x":16,"y":3,"type":"grass"},{"x":18,"y":5,"type":"grass"},{"x":19,"y":6,"type":"grass"},{"x":23,"y":10,"type":"grass"},{"x":23,"y":12,"type":"grass"},{"x":25,"y":16,"type":"grass"},{"x":25,"y":18,"type":"grass"},{"x":28,"y":22,"type":"grass"},{"x":27,"y":23,"type":"grass"},{"x":22,"y":25,"type":"grass"},{"x":24,"y":28,"type":"grass"},{"x":23,"y":28,"type":"grass"},{"x":26,"y":27,"type":"grass"},{"x":24,"y":23,"type":"grass"},{"x":26,"y":19,"type":"grass"},{"x":28,"y":18,"type":"grass"},{"x":28,"y":13,"type":"grass"},{"x":29,"y":10,"type":"grass"},{"x":27,"y":5,"type":"grass"},{"x":24,"y":7,"type":"grass"},{"x":23,"y":13,"type":"grass"},{"x":22,"y":14,"type":"grass"},{"x":20,"y":13,"type":"grass"},{"x":18,"y":14,"type":"grass"},{"x":17,"y":14,"type":"grass"},{"x":21,"y":1,"type":"grass"},{"x":16,"y":2,"type":"grass"},{"x":15,"y":3,"type":"grass"},{"x":23,"y":4,"type":"grass"},{"x":27,"y":6,"type":"grass"},{"x":28,"y":6,"type":"grass"},{"x":29,"y":1,"type":"grass"},{"x":27,"y":1,"type":"grass"},{"x":22,"y":1,"type":"grass"},{"x":19,"y":0,"type":"grass"},{"x":15,"y":0,"type":"grass"},{"x":13,"y":1,"type":"grass"},{"x":11,"y":1,"type":"grass"},{"x":8,"y":0,"type":"grass"},{"x":7,"y":0,"type":"grass"},{"x":7,"y":1,"type":"grass"},{"x":8,"y":2,"type":"grass"},{"x":7,"y":3,"type":"grass"},{"x":9,"y":5,"type":"grass"},{"x":9,"y":6,"type":"grass"},{"x":9,"y":7,"type":"grass"},{"x":9,"y":8,"type":"grass"},{"x":10,"y":8,"type":"grass"}
+    ]
   },
   ice: {
     name: 'Ледов', width: 30, height: 30, theme: 'ice',
     objects: [{"x":10,"y":5,"type":"glass"},{"x":11,"y":5,"type":"glass"},{"x":12,"y":5,"type":"glass"},{"x":12,"y":4,"type":"glass"},{"x":13,"y":4,"type":"glass"},{"x":11,"y":4,"type":"glass"},{"x":7,"y":9,"type":"truck"},{"x":13,"y":11,"type":"car"},{"x":6,"y":14,"type":"car"},{"x":3,"y":8,"type":"block_cyan"},{"x":3,"y":9,"type":"block_cyan"},{"x":4,"y":8,"type":"block_cyan"},{"x":3,"y":7,"type":"block_cyan"},{"x":19,"y":11,"type":"stone"},{"x":19,"y":12,"type":"stone"},{"x":20,"y":10,"type":"stone"},{"x":19,"y":10,"type":"stone"},{"x":20,"y":11,"type":"glass"},{"x":8,"y":22,"type":"block_blue"},{"x":9,"y":22,"type":"block_blue"},{"x":9,"y":23,"type":"block_blue"},{"x":10,"y":22,"type":"block_cyan"},{"x":9,"y":21,"type":"block_cyan"},{"x":10,"y":21,"type":"block_cyan"},{"x":22,"y":21,"type":"block_cyan"},{"x":22,"y":19,"type":"block_cyan"},{"x":22,"y":20,"type":"block_cyan"},{"x":23,"y":20,"type":"block_cyan"},{"x":14,"y":21,"type":"block_blue"},{"x":14,"y":20,"type":"block_blue"},{"x":15,"y":19,"type":"block_blue"},{"x":14,"y":18,"type":"block_blue"},{"x":14,"y":19,"type":"block_blue"},{"x":15,"y":18,"type":"block_blue"},{"x":14,"y":17,"type":"block_blue"},{"x":26,"y":7,"type":"block_cyan"},{"x":25,"y":5,"type":"block_cyan"},{"x":24,"y":3,"type":"block_cyan"},{"x":25,"y":6,"type":"block_blue"},{"x":24,"y":4,"type":"block_blue"},{"x":26,"y":8,"type":"block_blue"},{"x":24,"y":2,"type":"block_blue"},{"x":26,"y":9,"type":"block_cyan"},{"x":4,"y":9,"type":"glass"},{"x":4,"y":7,"type":"glass"},{"x":2,"y":7,"type":"glass"},{"x":1,"y":8,"type":"glass"},{"x":1,"y":7,"type":"glass"},{"x":2,"y":8,"type":"glass"},{"x":14,"y":24,"type":"glass"},{"x":15,"y":24,"type":"glass"},{"x":15,"y":25,"type":"glass"},{"x":13,"y":25,"type":"glass"},{"x":14,"y":25,"type":"glass"},{"x":17,"y":25,"type":"glass"},{"x":16,"y":25,"type":"glass"},{"x":12,"y":15,"type":"stone"},{"x":11,"y":15,"type":"stone"},{"x":10,"y":14,"type":"stone"},{"x":10,"y":15,"type":"stone"},{"x":3,"y":19,"type":"block_blue"},{"x":3,"y":20,"type":"block_blue"},{"x":4,"y":23,"type":"block_cyan"},{"x":6,"y":25,"type":"block_cyan"},{"x":5,"y":24,"type":"block_cyan"},{"x":4,"y":24,"type":"block_cyan"},{"x":26,"y":19,"type":"stone"},{"x":26,"y":20,"type":"stone"},{"x":22,"y":26,"type":"grass"},{"x":4,"y":3,"type":"grass"},{"x":5,"y":3,"type":"grass"},{"x":26,"y":13,"type":"grass"},{"x":24,"y":12,"type":"grass"},{"x":23,"y":8,"type":"grass"},{"x":10,"y":17,"type":"grass"},{"x":7,"y":17,"type":"grass"},{"x":6,"y":18,"type":"grass"},{"x":3,"y":15,"type":"grass"},{"x":3,"y":13,"type":"grass"},{"x":3,"y":12,"type":"grass"},{"x":6,"y":11,"type":"grass"},{"x":16,"y":14,"type":"grass"},{"x":17,"y":14,"type":"grass"},{"x":19,"y":18,"type":"grass"},{"x":17,"y":20,"type":"grass"},{"x":11,"y":22,"type":"grass"},{"x":12,"y":19,"type":"grass"},{"x":8,"y":25,"type":"grass"},{"x":6,"y":22,"type":"grass"},{"x":3,"y":26,"type":"grass"},{"x":17,"y":18,"type":"pumpkin"},{"x":16,"y":5,"type":"pumpkin"},{"x":7,"y":5,"type":"pumpkin"},{"x":8,"y":18,"type":"pumpkin"},{"x":3,"y":17,"type":"pumpkin"},{"x":24,"y":14,"type":"pumpkin"},{"x":21,"y":23,"type":"pumpkin"},{"x":10,"y":26,"type":"pumpkin"},{"x":5,"y":19,"type":"pumpkin"},{"x":1,"y":25,"type":"pumpkin"},{"x":20,"y":4,"type":"pumpkin"},{"x":16,"y":1,"type":"pumpkin"},{"x":28,"y":4,"type":"pumpkin"},{"x":26,"y":6,"type":"grass"},{"x":26,"y":5,"type":"grass"},{"x":25,"y":4,"type":"grass"},{"x":25,"y":3,"type":"grass"},{"x":19,"y":15,"type":"grass"},{"x":22,"y":16,"type":"grass"},{"x":15,"y":8,"type":"grass"},{"x":12,"y":8,"type":"grass"},{"x":11,"y":8,"type":"grass"},{"x":25,"y":23,"type":"truck"},{"x":10,"y":16,"type":"barrel"},{"x":11,"y":16,"type":"barrel"},{"x":11,"y":6,"type":"barrel"},{"x":12,"y":6,"type":"barrel"},{"x":24,"y":5,"type":"barrel"},{"x":24,"y":6,"type":"barrel"},{"x":14,"y":26,"type":"barrel"},{"x":15,"y":27,"type":"barrel"},{"x":14,"y":27,"type":"barrel"},{"x":23,"y":21,"type":"barrel"},{"x":21,"y":19,"type":"barrel"},{"x":21,"y":20,"type":"barrel"}]
   }
 };
-
-function mulberry32(a) {
-  return function () {
-    a |= 0; a = a + 0x6D2B79F5 | 0;
-    let t = Math.imul(a ^ a >>> 15, 1 | a);
-    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
-  };
-}
 
 function buildCrates(mapId, removePercent) {
   const map = MAPS[mapId] || MAPS.lasertag;
@@ -116,13 +116,7 @@ function buildCrates(mapId, removePercent) {
       disguise: !!def.disguise,
     });
   }
-  return {
-    crates,
-    width: map.width,
-    height: map.height,
-    theme: map.theme,
-    name: map.name,
-  };
+  return { crates, width: map.width, height: map.height, theme: map.theme, name: map.name };
 }
 
 function randomFreeSpot(mapW, mapH, crates) {
@@ -190,6 +184,37 @@ function broadcastToLobby(lobbyId, msg, exceptWs = null) {
 }
 
 function send(ws, msg) { if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(msg)); }
+
+/* ===== финализация игры — вызывается один раз ===== */
+function endGame(lobby, winners) {
+  const g = lobby.game;
+  if (!g || g.over) return;
+  g.over = true;
+  g.overAt = Date.now();
+  g.winners = winners;
+
+  console.log(`[${lobby.id}] game over. winners=${winners.join(',')}`);
+
+  broadcastToLobby(lobby.id, { type: 'matchEnd', winners });
+
+  // надёжный возврат в лобби через POST_GAME_MS
+  setTimeout(() => {
+    const l = lobbies.get(lobby.id);
+    if (!l) { console.log(`[${lobby.id}] lobby gone, skip backToLobby`); return; }
+    if (l.state !== 'game') { console.log(`[${lobby.id}] already not game, skip`); return; }
+
+    l.state = 'lobby';
+    l.game = null;
+    for (const p of l.players) {
+      p.x = 450 + (Math.random() - 0.5) * 120;
+      p.y = 546 + (Math.random() - 0.5) * 120;
+      p.moving = false;
+    }
+    console.log(`[${lobby.id}] → backToLobby`);
+    broadcastToLobby(l.id, { type: 'backToLobby', lobby: lobbySummary(l) });
+    broadcastLobbyList();
+  }, POST_GAME_MS);
+}
 
 wss.on('connection', (ws) => {
   const client = { id: makeId('p_'), name: 'Игрок', lobbyId: null, cosmetics: { hat: 'none', clothes: 'none' } };
@@ -301,7 +326,6 @@ wss.on('connection', (ws) => {
           if (!l || l.state !== 'starting') return;
           const mapData = buildCrates(l.settings.mapMode, l.settings.removePercent);
           const mapW = mapData.width, mapH = mapData.height;
-          const W = mapW * CELL, H = mapH * CELL;
 
           const entities = l.players.map((p, i) => {
             const isHunter = (i + 1) === hunterSlot;
@@ -325,12 +349,11 @@ wss.on('connection', (ws) => {
             crates: mapData.crates,
             entities,
             projectiles: [], effects: [], toasts: [],
-            time: 0, over: false, overTime: 0,
+            time: 0, over: false, overAt: 0,
             phase: 'prep',
             prepEndsAt: Date.now() + PREP_MS,
             mainEndsAt: 0,
             winners: [],
-            transitioning: false,
             fovPlayer: l.settings.fovPlayer,
             fovHunter: l.settings.fovHunter,
           };
@@ -411,16 +434,14 @@ function leaveLobby(ws, client) {
   const lobby = lobbies.get(client.lobbyId);
   if (!lobby) { client.lobbyId = null; return; }
   lobby.players = lobby.players.filter(p => p.id !== client.id);
-  if (lobby.game) {
+  if (lobby.game && !lobby.game.over) {
     lobby.game.entities = lobby.game.entities.filter(e => e.id !== client.id);
-    if (!lobby.game.over) {
-      const hiders = lobby.game.entities.filter(e => e.role === 'hider').length;
-      if (hiders === 0) {
-        lobby.game.over = true; lobby.game.overTime = 0;
-        lobby.game.winners = lobby.game.entities.filter(e => e.role === 'hunter').map(e => e.id);
-        broadcastToLobby(lobby.id, { type: 'matchEnd', winners: lobby.game.winners });
-      }
+    const hiders = lobby.game.entities.filter(e => e.role === 'hider').length;
+    if (hiders === 0) {
+      endGame(lobby, lobby.game.entities.filter(e => e.role === 'hunter').map(e => e.id));
     }
+  } else if (lobby.game) {
+    lobby.game.entities = lobby.game.entities.filter(e => e.id !== client.id);
   }
   if (lobby.players.length === 0) lobbies.delete(lobby.id);
   else {
@@ -438,6 +459,7 @@ setInterval(() => {
     const g = lobby.game;
     const dt = TICK_MS / 1000;
 
+    // prep → main
     if (g.phase === 'prep' && now >= g.prepEndsAt) {
       for (const e of g.entities) {
         if (e.role === 'hunter') {
@@ -450,89 +472,89 @@ setInterval(() => {
       broadcastToLobby(lobby.id, { type: 'phaseChange', phase: 'main' });
     }
 
-    if (g.phase === 'main' && !g.over) {
-      if (Date.now() >= g.mainEndsAt) {
-        g.over = true; g.overTime = 0;
-        g.winners = g.entities.filter(e => e.role === 'hider').map(e => e.id);
-        if (g.winners.length === 0) g.winners = g.entities.map(e => e.id);
-        broadcastToLobby(lobby.id, { type: 'matchEnd', winners: g.winners });
-      } else {
+    // если игра уже закончилась — только рассылаем state
+    if (g.over) {
+      broadcastToLobby(lobby.id, {
+        type: 'state', phase: g.phase,
+        timeLeft: 0,
+        entities: g.entities.map(e => ({
+          id: e.id, role: e.role, x: e.x, y: e.y, fx: e.fx, fy: e.fy,
+          disguised: !!e.disguised, disguiseType: e.disguiseType, shootFlash: e.shootFlash,
+          hat: e.hat || 'none', clothes: e.clothes || 'none',
+        })),
+        projectiles: [], effects: [], toasts: g.toasts,
+        over: true,
+      });
+      continue;
+    }
+
+    // игра идёт
+    if (g.phase === 'main') {
+      if (now >= g.mainEndsAt) {
+        const winners = g.entities.filter(e => e.role === 'hider').map(e => e.id);
+        endGame(lobby, winners.length ? winners : g.entities.map(e => e.id));
+        continue;
+      }
+      // cooldowns + projectiles + effects
+      for (const e of g.entities) {
+        if (e.shootCd > 0) e.shootCd -= dt;
+        if (e.shootFlash > 0) e.shootFlash -= dt;
+      }
+      for (let i = g.projectiles.length - 1; i >= 0; i--) {
+        const p = g.projectiles[i];
+        p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt;
+        if (p.life <= 0) { g.projectiles.splice(i, 1); continue; }
+        let stopped = false;
+        for (const c of g.crates) {
+          if (!c.solid || c.transparent) continue;
+          if (p.x >= c.x - c.hw && p.x <= c.x + c.hw &&
+              p.y >= c.y - c.hd && p.y <= c.y + c.hd) { stopped = true; break; }
+        }
+        if (stopped) { g.projectiles.splice(i, 1); continue; }
+        let hit = null;
         for (const e of g.entities) {
-          if (e.shootCd > 0) e.shootCd -= dt;
-          if (e.shootFlash > 0) e.shootFlash -= dt;
+          if (e.id === p.owner || e.role !== 'hider') continue;
+          const dx = e.x - p.x, dy = e.y - p.y;
+          if (dx * dx + dy * dy < (13 + 9) * (13 + 9)) { hit = e; break; }
         }
-        for (let i = g.projectiles.length - 1; i >= 0; i--) {
-          const p = g.projectiles[i];
-          p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt;
-          if (p.life <= 0) { g.projectiles.splice(i, 1); continue; }
-
-          let stopped = false;
-          for (const c of g.crates) {
-            if (!c.solid || c.transparent) continue;
-            if (p.x >= c.x - c.hw && p.x <= c.x + c.hw &&
-                p.y >= c.y - c.hd && p.y <= c.y + c.hd) {
-              stopped = true; break;
-            }
-          }
-          if (stopped) { g.projectiles.splice(i, 1); continue; }
-
-          let hit = null;
-          for (const e of g.entities) {
-            if (e.id === p.owner || e.role !== 'hider') continue;
-            const dx = e.x - p.x, dy = e.y - p.y;
-            if (dx * dx + dy * dy < (13 + 9) * (13 + 9)) { hit = e; break; }
-          }
-          if (hit) {
-            hit.role = 'hunter';
-            hit.disguised = false; hit.disguiseType = null;
-            hit.shootCd = 5;
-            g.effects.push({ x: hit.x, y: hit.y, z: 34, t: 0, max: 0.5 });
-            g.toasts.push({ x: hit.x, y: hit.y, z: 58, text: 'Найден!', life: 1.4, color: '#ff9d94' });
-            g.projectiles.splice(i, 1);
-          }
-        }
-        for (let i = g.effects.length - 1; i >= 0; i--) {
-          g.effects[i].t += dt;
-          if (g.effects[i].t > g.effects[i].max) g.effects.splice(i, 1);
-        }
-        for (let i = g.toasts.length - 1; i >= 0; i--) {
-          const t = g.toasts[i]; t.life -= dt; t.z += dt * 26;
-          if (t.life <= 0) g.toasts.splice(i, 1);
-        }
-        g.time += dt;
-        const hiders = g.entities.filter(e => e.role === 'hider').length;
-        if (hiders === 0) {
-          g.over = true; g.overTime = 0;
-          g.winners = g.entities.filter(e => e.role === 'hunter').map(e => e.id);
-          broadcastToLobby(lobby.id, { type: 'matchEnd', winners: g.winners });
+        if (hit) {
+          hit.role = 'hunter'; hit.disguised = false; hit.disguiseType = null; hit.shootCd = 5;
+          g.effects.push({ x: hit.x, y: hit.y, z: 34, t: 0, max: 0.5 });
+          g.toasts.push({ x: hit.x, y: hit.y, z: 58, text: 'Найден!', life: 1.4, color: '#ff9d94' });
+          g.projectiles.splice(i, 1);
         }
       }
-    } else if (g.over) {
-      g.overTime += dt;
-      if (g.overTime > POST_GAME_MS / 1000 && !g.transitioning) {
-        g.transitioning = true;
-        lobby.state = 'lobby';
-        lobby.game = null;
-        for (const p of lobby.players) {
-          p.x = 450 + (Math.random() - 0.5) * 120;
-          p.y = 546 + (Math.random() - 0.5) * 120;
-          p.moving = false;
-        }
-        broadcastToLobby(lobby.id, { type: 'backToLobby', lobby: lobbySummary(lobby) });
-        broadcastLobbyList();
+      for (let i = g.effects.length - 1; i >= 0; i--) {
+        g.effects[i].t += dt;
+        if (g.effects[i].t > g.effects[i].max) g.effects.splice(i, 1);
+      }
+      g.time += dt;
+      const hiders = g.entities.filter(e => e.role === 'hider').length;
+      if (hiders === 0) {
+        endGame(lobby, g.entities.filter(e => e.role === 'hunter').map(e => e.id));
         continue;
       }
     }
 
+    for (let i = g.toasts.length - 1; i >= 0; i--) {
+      const t = g.toasts[i]; t.life -= dt; t.z += dt * 26;
+      if (t.life <= 0) g.toasts.splice(i, 1);
+    }
+
+    const timeLeft = g.phase === 'main' ? Math.max(0, Math.ceil((g.mainEndsAt - Date.now()) / 1000))
+                   : g.phase === 'prep' ? Math.max(0, Math.ceil((g.prepEndsAt - Date.now()) / 1000))
+                   : 0;
+
     broadcastToLobby(lobby.id, {
       type: 'state', phase: g.phase,
+      timeLeft,
       entities: g.entities.map(e => ({
         id: e.id, role: e.role, x: e.x, y: e.y, fx: e.fx, fy: e.fy,
         disguised: !!e.disguised, disguiseType: e.disguiseType, shootFlash: e.shootFlash,
         hat: e.hat || 'none', clothes: e.clothes || 'none',
       })),
       projectiles: g.projectiles, effects: g.effects, toasts: g.toasts,
-      time: g.time, over: g.over, overTime: g.overTime,
+      over: false,
     });
   }
 }, TICK_MS);
