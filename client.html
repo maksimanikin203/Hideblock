@@ -2,13 +2,13 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>blockhide — online</title>
 <style>
   :root{--bg:#0a0d13;--panel:#151b26;--panel2:#1c2433;--line:#2a3446;--accent:#5ac8ff;--text:#e8edf7;--muted:#8b98ad;}
   *{box-sizing:border-box;}
-  html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);font-family:'Segoe UI',system-ui,sans-serif;color:var(--text);user-select:none;-webkit-user-select:none;}
-  canvas{display:block;position:fixed;inset:0;}
+  html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);font-family:'Segoe UI',system-ui,sans-serif;color:var(--text);user-select:none;-webkit-user-select:none;overscroll-behavior:none;touch-action:none;}
+  canvas{display:block;position:fixed;inset:0;touch-action:none;}
   #ui{position:fixed;inset:0;pointer-events:none;}
   .hidden{display:none !important;}
   .btn{pointer-events:auto;border:1px solid var(--line);background:linear-gradient(180deg,#222c3d,#1a2230);color:var(--text);padding:10px 18px;border-radius:10px;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .12s;}
@@ -86,6 +86,76 @@
   .slider-row{display:flex;align-items:center;gap:10px;}
   .slider-row input{flex:1;}
   .slider-row .val{font-size:13px;color:var(--accent);font-weight:700;min-width:42px;text-align:right;}
+
+  /* ============ JOYSTICK ============ */
+  #joystick{
+    position:fixed;
+    left:24px;
+    bottom:24px;
+    width:150px;
+    height:150px;
+    z-index:60;
+    pointer-events:auto;
+    touch-action:none;
+    user-select:none;
+  }
+  #joystickBase{
+    position:absolute;inset:0;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(90,200,255,0.08) 0%, rgba(90,200,255,0.15) 100%);
+    border:2px solid rgba(90,200,255,0.45);
+    backdrop-filter:blur(4px);
+    box-shadow:inset 0 0 20px rgba(90,200,255,0.1), 0 6px 24px rgba(0,0,0,0.35);
+  }
+  #joystickKnob{
+    position:absolute;
+    left:50%;top:50%;
+    width:64px;height:64px;
+    margin-left:-32px;margin-top:-32px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, rgba(180,240,255,0.95), rgba(63,180,240,0.85));
+    border:2px solid rgba(255,255,255,0.55);
+    box-shadow:0 4px 20px rgba(90,200,255,0.55), inset 0 -4px 8px rgba(0,0,0,0.2);
+    transform:translate(0,0);
+    transition:transform 0.12s ease-out;
+    will-change:transform;
+  }
+  #joystick.active #joystickKnob{
+    transition:none;
+  }
+
+  /* ============ MOBILE ============ */
+  body.mobile #screenMenu .logo{left:22px;top:22px;font-size:44px;}
+  body.mobile #screenMenu .tagline{left:24px;top:76px;font-size:12px;}
+  body.mobile #screenMenu .name-box{left:22px;top:120px;}
+  body.mobile #screenMenu .name-box input{width:200px;font-size:15px;padding:11px 14px;}
+  body.mobile #btnPlay{right:20px;bottom:20px;padding:16px 44px;font-size:18px;}
+  body.mobile .menu-extra{right:20px;bottom:96px;}
+  body.mobile #connStatus{left:24px;top:172px;font-size:11.5px;}
+
+  body.mobile .hud-top{left:10px;top:10px;right:10px;}
+  body.mobile .hud-card{padding:7px 12px;max-width:60vw;}
+  body.mobile .hud-sub{font-size:11px;}
+  body.mobile .role{font-size:13px;}
+  body.mobile .hint{bottom:190px;font-size:11.5px;padding:7px 14px;max-width:90vw;white-space:normal;text-align:center;line-height:1.35;}
+  body.mobile .players-list{font-size:11px;}
+
+  body.mobile .panel{width:92vw;padding:18px;}
+  body.mobile .panel h2{font-size:18px;}
+  body.mobile .modal-box{width:94vw !important;max-width:94vw;padding:18px;max-height:92vh;}
+  body.mobile .modal-box h2{font-size:17px;}
+  body.mobile .field{margin-bottom:12px;}
+  body.mobile .row{flex-direction:column;gap:8px;}
+  body.mobile .row .btn{width:100%;}
+  body.mobile .btn{padding:12px 18px;font-size:15px;}
+  body.mobile .btn.big{padding:16px 42px;font-size:17px;}
+  body.mobile .shop-grid{grid-template-columns:repeat(2,1fr);gap:8px;}
+  body.mobile .shop-item{padding:10px 6px;}
+  body.mobile .shop-item .si-name{font-size:11px;min-height:28px;}
+  body.mobile .ms-grid{max-width:92vw;margin-left:auto;margin-right:auto;}
+  body.mobile .ttt-grid{max-width:82vw;}
+  body.mobile .lobby-item{padding:10px 12px;font-size:13px;}
+  body.mobile #toast{font-size:14px;padding:10px 18px;top:60px;}
 </style>
 </head>
 <body>
@@ -225,6 +295,11 @@
     </div>
   </div>
 
+  <div id="joystick" class="hidden">
+    <div id="joystickBase"></div>
+    <div id="joystickKnob"></div>
+  </div>
+
 </div>
 <div id="toast" class="hidden"></div>
 
@@ -240,6 +315,11 @@ function roundRect(x,y,w,h,r){
   ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
   ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
 }
+
+/* ===== device detection ===== */
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+              || (navigator.maxTouchPoints > 0 && window.matchMedia('(pointer: coarse)').matches);
+if (isMobile) document.body.classList.add('mobile');
 
 const canvas = document.getElementById('cv');
 const ctx = canvas.getContext('2d');
@@ -286,7 +366,7 @@ const OBJECT_DEFS = {
   barrel:  { w:1, d:1, h:42,  render:'barrel' },
   box:     { w:1, d:1, h:32,  render:'box' },
   stone:   { w:1, d:1, h:72,  render:'stone' },
-  glass:   { w:1, d:1, h:52,  render:'glass' },
+  glass:   { w:1, d:1, h:52,  render:'glass', transparent: true },
   wood:    { w:2, d:2, h:120, render:'tree' },
   grass:   { w:1, d:1, h:16,  render:'grass' },
   pumpkin: { w:1, d:1, h:26,  render:'pumpkin' },
@@ -358,14 +438,168 @@ const state = {
 
 const keys = Object.create(null);
 const mouse = { x:0, y:0, down:false };
+
+/* ===== joystick ===== */
+const joyState = { active: false, dx: 0, dy: 0, touchId: null };
+const joyEl = document.getElementById('joystick');
+const joyKnob = document.getElementById('joystickKnob');
+
+function joyStart(e) {
+  if (!isMobile) return;
+  const touch = e.changedTouches ? e.changedTouches[0] : null;
+  if (!touch) return;
+  joyState.touchId = touch.identifier;
+  joyState.active = true;
+  joyEl.classList.add('active');
+  joyMove(e);
+  e.preventDefault();
+  e.stopPropagation();
+}
+
+function joyMove(e) {
+  if (!joyState.active) return;
+  let touch = null;
+  if (e.touches) {
+    for (let i = 0; i < e.touches.length; i++) {
+      if (e.touches[i].identifier === joyState.touchId) { touch = e.touches[i]; break; }
+    }
+  }
+  if (!touch) return;
+
+  const rect = joyEl.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+  const maxR = rect.width / 2 - 22;
+
+  let dx = touch.clientX - centerX;
+  let dy = touch.clientY - centerY;
+  const dist = Math.hypot(dx, dy);
+  if (dist > maxR) {
+    dx = dx / dist * maxR;
+    dy = dy / dist * maxR;
+  }
+
+  joyKnob.style.transform = `translate(${dx}px, ${dy}px)`;
+  joyState.dx = dx / maxR;
+  joyState.dy = dy / maxR;
+  e.preventDefault();
+}
+
+function joyEnd(e) {
+  if (!joyState.active) return;
+  if (e.changedTouches) {
+    let ended = false;
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      if (e.changedTouches[i].identifier === joyState.touchId) { ended = true; break; }
+    }
+    if (!ended) return;
+  }
+  joyState.active = false;
+  joyState.dx = 0;
+  joyState.dy = 0;
+  joyEl.classList.remove('active');
+  joyKnob.style.transform = 'translate(0, 0)';
+}
+
+joyEl.addEventListener('touchstart', joyStart, { passive: false });
+joyEl.addEventListener('touchmove', joyMove, { passive: false });
+joyEl.addEventListener('touchend', joyEnd);
+joyEl.addEventListener('touchcancel', joyEnd);
+
+function updateJoystickVisibility() {
+  if (!isMobile) { joyEl.classList.add('hidden'); return; }
+  const inLobby = state.screen === 'lobby';
+  const inGame = state.screen === 'game' && state.game && !state.game.over;
+  const show = (inLobby || inGame) && !isModalOpen();
+  joyEl.classList.toggle('hidden', !show);
+  if (!show) {
+    if (joyState.active) {
+      joyState.active = false;
+      joyState.dx = 0; joyState.dy = 0;
+      joyKnob.style.transform = 'translate(0, 0)';
+      joyEl.classList.remove('active');
+    }
+  }
+}
+
+/* ===== proximity sound ===== */
+let audioCtx = null;
+function ensureAudio() {
+  if (!audioCtx) {
+    try {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    } catch { return null; }
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+document.addEventListener('click', ensureAudio, { once: true });
+document.addEventListener('touchstart', ensureAudio, { once: true });
+document.addEventListener('keydown', ensureAudio, { once: true });
+
+function playProximityBeep(volume) {
+  const ac = ensureAudio();
+  if (!ac) return;
+  try {
+    const t0 = ac.currentTime;
+    const osc = ac.createOscillator();
+    const gain = ac.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(660, t0);
+    osc.frequency.linearRampToValueAtTime(880, t0 + 0.15);
+    gain.gain.setValueAtTime(0, t0);
+    gain.gain.linearRampToValueAtTime(volume * 0.45, t0 + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.9);
+    osc.connect(gain);
+    gain.connect(ac.destination);
+    osc.start(t0);
+    osc.stop(t0 + 0.95);
+  } catch {}
+}
+
+let lastSoundAt = 0;
+
+function maybeBeepProximity() {
+  if (!state.game || state.game.over || state.screen !== 'game') return;
+  if (state.game.phase !== 'main') return;
+  const now = performance.now();
+  if (now - lastSoundAt < 15000) return;
+  lastSoundAt = now;
+
+  const me = localEntity();
+  if (!me) return;
+
+  const others = state.game.entities.filter(e => e.id !== me.id);
+  if (!others.length) return;
+  const target = others[Math.floor(Math.random() * others.length)];
+
+  const dist = Math.hypot(target.x - me.x, target.y - me.y);
+  const maxDist = 1500;
+  const t = 1 - Math.min(1, dist / maxDist);
+  const volume = Math.max(0.05, t * 0.9);
+  playProximityBeep(volume);
+}
+
+/* ===== input ===== */
 window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
 canvas.addEventListener('mousedown', e => {
   if (e.button !== 0) return;
+  if (isMobile) return;
   mouse.down = true;
   if (isModalOpen()) return;
   if (state.screen === 'game' && state.game && state.game.phase === 'main' && !state.game.over) shoot();
 });
 window.addEventListener('mouseup', e => { if (e.button === 0) mouse.down = false; });
+
+canvas.addEventListener('touchstart', e => {
+  if (!isMobile) return;
+  if (isModalOpen()) return;
+  e.preventDefault();
+  const touch = e.changedTouches[0];
+  if (!touch) return;
+  handleTapAt(touch.clientX, touch.clientY);
+}, { passive: false });
+
 window.addEventListener('keydown', e => {
   if (e.target && /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
   keys[e.code] = true;
@@ -386,7 +620,13 @@ function isModalOpen(sel){
   if (sel) return !$(sel).classList.contains('hidden');
   return document.querySelectorAll('.modal:not(.hidden)').length > 0;
 }
+
 function getInput(){
+  if (isMobile && joyState.active) {
+    const mag = Math.hypot(joyState.dx, joyState.dy);
+    if (mag < 0.15) return { ix: 0, iy: 0 };
+    return { ix: joyState.dx, iy: joyState.dy };
+  }
   let ix=0, iy=0;
   if (keys['KeyA']||keys['ArrowLeft']) ix-=1;
   if (keys['KeyD']||keys['ArrowRight']) ix+=1;
@@ -466,7 +706,7 @@ function handleMessage(msg){
     }
     case 'backToLobby':
       hideMinesweeper(); hideTicTacToe(); closeRoulette(true);
-      state.game = null;
+      state.game = null; lastSoundAt = 0;
       if (msg.lobby){
         state.lobby = msg.lobby;
         state.isHost = msg.lobby.hostId === state.youId;
@@ -502,6 +742,7 @@ function setScreen(s){
   if (s !== 'menu') closeShop();
   canvas.style.cursor = 'default';
   if (s === 'menu') updateCoinsUI();
+  updateJoystickVisibility();
 }
 
 function renderLobbyList(){
@@ -539,8 +780,8 @@ function updateLobbyHud(){
     pl.appendChild(d);
   });
   $('#lobbyHint').textContent = state.isHost
-    ? 'WASD — ходить · подойди к терминалу и нажми E'
-    : 'WASD — ходить · хост настраивает у терминала';
+    ? (isMobile ? 'Джойстик — ходить · подойди к терминалу и тапни по нему' : 'WASD — ходить · подойди к терминалу и нажми E')
+    : (isMobile ? 'Джойстик — ходить · хост настраивает у терминала' : 'WASD — ходить · хост настраивает у терминала');
 }
 
 let lobbyWorld = null;
@@ -677,6 +918,7 @@ function applyGameStart(msg){
   state.localDisguised = false; state.localDisguiseType = null;
   state.nearCrate = null; state.nearMachine = null;
   state.fovCurrent = 1.0;
+  lastSoundAt = 0;
 
   const me = state.game.entities.find(e => e.id === state.youId);
   if (me){
@@ -780,7 +1022,7 @@ function renderPrepRoom(){
     drawFloatLabel(pr.x, pr.y, 'E');
   }
 
-  const remaining = Math.max(0, Math.ceil((state.game.prepEndsAt - Date.now())/1000));
+  const remaining = Math.max(0, state.game.timeLeft || 0);
   ctx.save();
   ctx.textAlign = 'center';
   ctx.font = '700 22px Segoe UI, sans-serif';
@@ -840,7 +1082,7 @@ function updateMainGame(dt){
     send({ type:'input', x: me.x, y: me.y, fx: me.fx, fy: me.fy,
            disguised: state.localDisguised, disguiseType: state.localDisguiseType });
   }
-  if (me.role === 'hunter' && mouse.down && !isModalOpen() && me.shootCd <= 0 && !g.over) shoot();
+  if (!isMobile && me.role === 'hunter' && mouse.down && !isModalOpen() && me.shootCd <= 0 && !g.over) shoot();
 
   cam.x += (me.x - cam.x) * Math.min(1, dt*8);
   cam.y += (me.y - cam.y) * Math.min(1, dt*8);
@@ -856,6 +1098,8 @@ function updateMainGame(dt){
   else if (me.role === 'hider') targetFov = g.fovPlayer;
   else targetFov = g.fovHunter;
   state.fovCurrent += (targetFov - state.fovCurrent) * Math.min(1, dt * 1.8);
+
+  maybeBeepProximity();
 }
 
 function findNearCrate(g, x, y, baseReach){
@@ -878,6 +1122,86 @@ function shoot(){
   const len = Math.hypot(dx, dy) || 1; dx /= len; dy /= len;
   send({ type:'shoot', dx, dy });
   me.shootCd = 5;
+}
+
+/* ===== тап на мобильном ===== */
+function handleTapAt(sx, sy){
+  if (!state.game) return;
+  if (isModalOpen()) return;
+  const g = state.game;
+  const me = localEntity();
+  if (!me) return;
+
+  // Prep room для охотника — тап по автомату
+  if (me.role === 'hunter' && g.phase === 'prep') {
+    const world = screenToWorld(sx, sy);
+    for (const m of PREP.machines){
+      const d = Math.hypot(m.x - world.x, m.y - world.y);
+      if (d < 80){
+        const pd = Math.hypot(m.x - me.x, m.y - me.y);
+        if (pd < 120){
+          if (m.id === 'minesweeper') openMinesweeper();
+          else if (m.id === 'tictactoe') openTicTacToe();
+        } else {
+          showToast('Слишком далеко');
+        }
+        return;
+      }
+    }
+    return;
+  }
+
+  // Охотник на карте — выстрел в сторону тапа
+  if (me.role === 'hunter') {
+    if (g.phase !== 'main' || g.over) return;
+    if (me.shootCd > 0) return;
+    const target = screenToWorld(sx, sy);
+    let dx = target.x - me.x, dy = target.y - me.y;
+    const len = Math.hypot(dx, dy) || 1;
+    dx /= len; dy /= len;
+    send({ type: 'shoot', dx, dy });
+    me.shootCd = 5;
+    return;
+  }
+
+  // Прячущийся — тап по себе снимает маскировку
+  const world = screenToWorld(sx, sy);
+  const selfDist = Math.hypot(world.x - me.x, world.y - me.y);
+  if (state.localDisguised && selfDist < 60) {
+    state.localDisguised = false;
+    state.localDisguiseType = null;
+    send({ type:'input', x: me.x, y: me.y, fx: me.fx, fy: me.fy, disguised: false, disguiseType: null });
+    updateGameHud();
+    return;
+  }
+
+  // Ищем блок под тапом
+  let best = null, bd = 1e9;
+  for (const c of g.crates){
+    if (!c.disguise) continue;
+    const d = Math.hypot(c.x - world.x, c.y - world.y);
+    const tapReach = Math.max(c.hw, c.hd) + 24;
+    if (d < tapReach && d < bd) { bd = d; best = c; }
+  }
+  if (!best) return;
+
+  const playerDist = Math.hypot(best.x - me.x, best.y - me.y);
+  const reach = Math.max(best.hw, best.hd) + 80;
+  if (playerDist > reach) {
+    showToast('Слишком далеко');
+    return;
+  }
+
+  if (state.localDisguised && state.localDisguiseType === best.type) {
+    state.localDisguised = false;
+    state.localDisguiseType = null;
+  } else {
+    state.localDisguised = true;
+    state.localDisguiseType = best.type;
+  }
+  send({ type:'input', x: me.x, y: me.y, fx: me.fx, fy: me.fy,
+         disguised: state.localDisguised, disguiseType: state.localDisguiseType });
+  updateGameHud();
 }
 
 function tryInteract(){
@@ -917,15 +1241,19 @@ function updateGameHud(){
   const me = localEntity(); if (!me) return;
   const roleEl = $('#gameRole');
   const phase = state.game.phase;
+  const tapWord = isMobile ? 'тапни' : 'нажми E';
+
   if (me.role === 'hunter'){
     roleEl.textContent = 'ВЫ — ОХОТНИК';
     roleEl.className = 'role hunter';
     if (phase === 'main'){
       const cd = me.shootCd > 0 ? ` · Перезарядка: ${me.shootCd.toFixed(1)}с` : '';
-      $('#gameHint').textContent = 'ЛКМ — выстрелить · WASD — ходить' + cd;
-      canvas.style.cursor = 'crosshair';
+      $('#gameHint').textContent = isMobile
+        ? 'Тап по экрану — выстрел' + cd
+        : 'ЛКМ — выстрелить · WASD — ходить' + cd;
+      canvas.style.cursor = isMobile ? 'default' : 'crosshair';
     } else {
-      $('#gameHint').textContent = 'Подойди к автомату и нажми E';
+      $('#gameHint').textContent = isMobile ? 'Тапни по автомату' : 'Подойди к автомату и нажми E';
       canvas.style.cursor = 'default';
     }
   } else {
@@ -934,29 +1262,33 @@ function updateGameHud(){
     if (phase === 'prep'){
       $('#gameHint').textContent = 'Ты не видишь куда идёшь... Ищи укрытие на ощупь!';
     } else if (state.localDisguised){
-      $('#gameHint').textContent = 'E — снять маскировку · WASD — ходить';
+      $('#gameHint').textContent = isMobile
+        ? 'Тапни по себе — снять маскировку'
+        : 'E — снять маскировку · WASD — ходить';
     } else if (state.nearCrate){
-      $('#gameHint').textContent = 'E — замаскироваться под этот объект';
+      $('#gameHint').textContent = isMobile
+        ? 'Тапни по блоку, чтобы замаскироваться'
+        : 'E — замаскироваться под этот объект';
     } else {
-      $('#gameHint').textContent = 'Подойди к объекту и нажми E';
+      $('#gameHint').textContent = isMobile ? 'Подойди к блоку и тапни по нему' : 'Подойди к объекту и нажми E';
     }
     canvas.style.cursor = 'default';
   }
   const hiders = state.game.entities.filter(e => e.role === 'hider').length;
   $('#gameInfo').textContent = 'Прячущихся: ' + hiders;
-  // обратный отсчёт
+
   if (state.game.phase === 'main'){
     const left = Math.max(0, state.game.timeLeft || 0);
     $('#gameTimer').textContent = `${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}`;
   } else if (state.game.phase === 'prep'){
-    const left = Math.max(0, Math.ceil((state.game.prepEndsAt - Date.now())/1000));
+    const left = Math.max(0, state.game.timeLeft || 0);
     $('#gameTimer').textContent = `до охоты ${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}`;
   } else {
     $('#gameTimer').textContent = '00:00';
   }
 }
 
-/* ===== rendering primitives ===== */
+/* ===== rendering ===== */
 function poly(pts, fill, stroke, lw){
   ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
   for (let i=1;i<pts.length;i++) ctx.lineTo(pts[i].x, pts[i].y);
@@ -985,7 +1317,6 @@ function drawLegacyCrate(c){
   poly([project(x-hw,y-hd,h),project(x+hw,y-hd,h),project(x+hw,y+hd,h),project(x-hw,y+hd,h)],c.top,'rgba(0,0,0,0.28)',1);
 }
 
-/* ===== object rendering ===== */
 function drawObject(type, cx, cy, highlight){
   const def = OBJECT_DEFS[type];
   if (!def) return;
@@ -994,8 +1325,12 @@ function drawObject(type, cx, cy, highlight){
   const x0 = cx - hw, y0 = cy - hd;
   const w = def.w * CELL, d = def.d * CELL;
   const h = def.h;
-  const z = cam.zoom;
-  poly([project(x0,y0,0),project(x0+w,y0,0),project(x0+w,y0+d,0),project(x0,y0+d,0)],'rgba(0,0,0,0.25)');
+
+  // Тень только для непрозрачных
+  if (!def.transparent){
+    poly([project(x0,y0,0),project(x0+w,y0,0),project(x0+w,y0+d,0),project(x0,y0+d,0)],'rgba(0,0,0,0.25)');
+  }
+
   switch (def.render) {
     case 'block':   drawIsoBox(x0, y0, w, d, h, def.colors); break;
     case 'box':     drawBoxObj(x0, y0, w, d, h); break;
@@ -1011,6 +1346,7 @@ function drawObject(type, cx, cy, highlight){
     case 'car':     drawCar(x0, y0, w, d, h); break;
     case 'stump':   drawStump(x0, y0, w, d, h); break;
   }
+
   if (highlight){
     ctx.save();
     ctx.globalAlpha = highlight;
@@ -1084,18 +1420,21 @@ function drawStoneWall(x0, y0, w, d, h){
 }
 
 function drawGlassWall(x0, y0, w, d, h){
+  // Без тени, без серой обводки. Полупрозрачные грани со светлым контуром.
   ctx.save();
-  ctx.globalAlpha = 0.65;
-  drawIsoBox(x0, y0, w, d, h, {
-    top: 'rgba(180,230,255,0.7)',
-    side1: 'rgba(100,170,210,0.7)',
-    side2: 'rgba(70,130,170,0.7)',
-  });
+  ctx.globalAlpha = 0.68;
+  poly([project(x0+w,y0,0),project(x0+w,y0+d,0),project(x0+w,y0+d,h),project(x0+w,y0,h)],
+       'rgba(120,185,225,0.55)', 'rgba(220,240,255,0.85)', 1.5);
+  poly([project(x0,y0+d,0),project(x0+w,y0+d,0),project(x0+w,y0+d,h),project(x0,y0+d,h)],
+       'rgba(85,145,185,0.55)', 'rgba(200,225,245,0.85)', 1.5);
+  poly([project(x0,y0,h),project(x0+w,y0,h),project(x0+w,y0+d,h),project(x0,y0+d,h)],
+       'rgba(200,235,255,0.6)', 'rgba(240,250,255,0.9)', 1.5);
   ctx.restore();
+  // Блик
   const c = project(x0+w*0.35, y0+d*0.35, h);
   const z = cam.zoom;
   ctx.save();
-  ctx.globalAlpha = 0.5;
+  ctx.globalAlpha = 0.55;
   ctx.strokeStyle = '#e0f4ff'; ctx.lineWidth = 2*z;
   ctx.beginPath();
   ctx.moveTo(c.x - 6*z, c.y - 4*z);
@@ -1377,7 +1716,6 @@ function drawStump(x0, y0, w, d, h){
   }
 }
 
-/* ===== humanoid ===== */
 function drawHumanoid(px, py, phase, opts){
   opts = opts || {};
   const z = cam.zoom;
@@ -1580,7 +1918,7 @@ function renderGame(){
   for (const f of g.effects) drawSplash(f);
   if (state.nearCrate && me && me.role === 'hider' && !state.localDisguised){
     const pr = project(state.nearCrate.x, state.nearCrate.y, state.nearCrate.h + 30);
-    drawFloatLabel(pr.x, pr.y, 'E');
+    drawFloatLabel(pr.x, pr.y, isMobile ? 'ТАП' : 'E');
   }
   for (const t of g.toasts){
     const pr = project(t.x, t.y, t.z);
@@ -1652,8 +1990,9 @@ function openSettings(){
   $('#lblRemove').textContent = s.removePercent + '%';
   $('#chkDebug').checked = !!s.debug;
   $('#panelSettings').classList.remove('hidden');
+  updateJoystickVisibility();
 }
-function closeSettings(){ $('#panelSettings').classList.add('hidden'); }
+function closeSettings(){ $('#panelSettings').classList.add('hidden'); updateJoystickVisibility(); }
 function sendSettings(){
   if (!state.isHost || !state.lobby) return;
   send({ type: 'updateSettings', settings: {
@@ -1670,8 +2009,9 @@ function toggleDebug(){
   const p = $('#panelDebug');
   if (p.classList.contains('hidden')){ updateDebugPanel(); p.classList.remove('hidden'); }
   else p.classList.add('hidden');
+  updateJoystickVisibility();
 }
-function closeDebug(){ $('#panelDebug').classList.add('hidden'); }
+function closeDebug(){ $('#panelDebug').classList.add('hidden'); updateJoystickVisibility(); }
 function updateDebugPanel(){
   const me = localEntity(); if (!me) return;
   $('#btnSwitchRole').textContent = me.role === 'hunter' ? 'Стать прячущимся' : 'Стать охотником';
@@ -1681,7 +2021,7 @@ function updateCoinsUI(){
   const s = $('#shopCoins'); if (s) s.textContent = state.coins;
 }
 function openShop(){ renderShop(); $('#panelShop').classList.remove('hidden'); }
-function closeShop(){ $('#panelShop').classList.add('hidden'); }
+function closeShop(){ $('#panelShop').classList.add('hidden'); updateJoystickVisibility(); }
 function renderShop(){
   updateCoinsUI();
   renderShopCategory('hats', HATS, state.ownedHats, state.hat);
@@ -1730,6 +2070,7 @@ function showRoulette(msg){
   const hunterIdx = ids.indexOf(msg.hunterId);
   const duration = msg.duration || 3000;
   $('#panelRoulette').classList.remove('hidden');
+  updateJoystickVisibility();
   const el = $('#rouletteName'); el.classList.remove('winner');
   const startTime = performance.now();
   let lastStep = startTime, currentIdx = 0;
@@ -1745,6 +2086,7 @@ function showRoulette(msg){
       setTimeout(() => {
         el.classList.remove('winner');
         $('#panelRoulette').classList.add('hidden');
+        updateJoystickVisibility();
         if (state.pendingGameStart){
           const m = state.pendingGameStart; state.pendingGameStart = null;
           applyGameStart(m);
@@ -1765,6 +2107,7 @@ function showRoulette(msg){
 function closeRoulette(force){
   cancelAnimationFrame(rouletteTimer);
   $('#panelRoulette').classList.add('hidden');
+  updateJoystickVisibility();
   if (force) state.pendingGameStart = null;
 }
 
@@ -1849,8 +2192,8 @@ function createMinesweeper(){
   render();
   return { reset };
 }
-function openMinesweeper(){ if (!state.ms) state.ms = createMinesweeper(); $('#panelMinesweeper').classList.remove('hidden'); }
-function hideMinesweeper(){ $('#panelMinesweeper').classList.add('hidden'); }
+function openMinesweeper(){ if (!state.ms) state.ms = createMinesweeper(); $('#panelMinesweeper').classList.remove('hidden'); updateJoystickVisibility(); }
+function hideMinesweeper(){ $('#panelMinesweeper').classList.add('hidden'); updateJoystickVisibility(); }
 
 function createTicTacToe(){
   let board = Array(9).fill(null);
@@ -1916,8 +2259,8 @@ function createTicTacToe(){
   render();
   return { reset };
 }
-function openTicTacToe(){ if (!state.ttt) state.ttt = createTicTacToe(); $('#panelTicTacToe').classList.remove('hidden'); }
-function hideTicTacToe(){ $('#panelTicTacToe').classList.add('hidden'); }
+function openTicTacToe(){ if (!state.ttt) state.ttt = createTicTacToe(); $('#panelTicTacToe').classList.remove('hidden'); updateJoystickVisibility(); }
+function hideTicTacToe(){ $('#panelTicTacToe').classList.add('hidden'); updateJoystickVisibility(); }
 
 let lastTime = performance.now();
 function loop(now){
@@ -1928,6 +2271,8 @@ function loop(now){
     if (isInPrepRoom()) updatePrepRoom(dt);
     else updateMainGame(dt);
   }
+  if (isMobile) updateJoystickVisibility();
+
   const g = ctx.createLinearGradient(0, 0, 0, H);
   g.addColorStop(0, '#121a26'); g.addColorStop(1, '#070a10');
   ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
