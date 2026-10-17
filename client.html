@@ -85,46 +85,11 @@
   @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(-10px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
   .slider-row{display:flex;align-items:center;gap:10px;}
   .slider-row input{flex:1;}
-  .slider-row .val{font-size:13px;color:var(--accent);font-weight:700;min-width:42px;text-align:right;}
-
-  /* ============ JOYSTICK ============ */
-  #joystick{
-    position:fixed;
-    left:24px;
-    bottom:24px;
-    width:150px;
-    height:150px;
-    z-index:60;
-    pointer-events:auto;
-    touch-action:none;
-    user-select:none;
-  }
-  #joystickBase{
-    position:absolute;inset:0;
-    border-radius:50%;
-    background:radial-gradient(circle, rgba(90,200,255,0.08) 0%, rgba(90,200,255,0.15) 100%);
-    border:2px solid rgba(90,200,255,0.45);
-    backdrop-filter:blur(4px);
-    box-shadow:inset 0 0 20px rgba(90,200,255,0.1), 0 6px 24px rgba(0,0,0,0.35);
-  }
-  #joystickKnob{
-    position:absolute;
-    left:50%;top:50%;
-    width:64px;height:64px;
-    margin-left:-32px;margin-top:-32px;
-    border-radius:50%;
-    background:radial-gradient(circle at 35% 35%, rgba(180,240,255,0.95), rgba(63,180,240,0.85));
-    border:2px solid rgba(255,255,255,0.55);
-    box-shadow:0 4px 20px rgba(90,200,255,0.55), inset 0 -4px 8px rgba(0,0,0,0.2);
-    transform:translate(0,0);
-    transition:transform 0.12s ease-out;
-    will-change:transform;
-  }
-  #joystick.active #joystickKnob{
-    transition:none;
-  }
-
-  /* ============ MOBILE ============ */
+  .slider-row .val{font-size:13px;color:var(--accent);font-weight:700;min-width:52px;text-align:right;}
+  #joystick{position:fixed;left:24px;bottom:24px;width:150px;height:150px;z-index:60;pointer-events:auto;touch-action:none;user-select:none;}
+  #joystickBase{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle, rgba(90,200,255,0.08) 0%, rgba(90,200,255,0.15) 100%);border:2px solid rgba(90,200,255,0.45);backdrop-filter:blur(4px);box-shadow:inset 0 0 20px rgba(90,200,255,0.1), 0 6px 24px rgba(0,0,0,0.35);}
+  #joystickKnob{position:absolute;left:50%;top:50%;width:64px;height:64px;margin-left:-32px;margin-top:-32px;border-radius:50%;background:radial-gradient(circle at 35% 35%, rgba(180,240,255,0.95), rgba(63,180,240,0.85));border:2px solid rgba(255,255,255,0.55);box-shadow:0 4px 20px rgba(90,200,255,0.55), inset 0 -4px 8px rgba(0,0,0,0.2);transform:translate(0,0);transition:transform 0.12s ease-out;will-change:transform;}
+  #joystick.active #joystickKnob{transition:none;}
   body.mobile #screenMenu .logo{left:22px;top:22px;font-size:44px;}
   body.mobile #screenMenu .tagline{left:24px;top:76px;font-size:12px;}
   body.mobile #screenMenu .name-box{left:22px;top:120px;}
@@ -132,14 +97,12 @@
   body.mobile #btnPlay{right:20px;bottom:20px;padding:16px 44px;font-size:18px;}
   body.mobile .menu-extra{right:20px;bottom:96px;}
   body.mobile #connStatus{left:24px;top:172px;font-size:11.5px;}
-
   body.mobile .hud-top{left:10px;top:10px;right:10px;}
   body.mobile .hud-card{padding:7px 12px;max-width:60vw;}
   body.mobile .hud-sub{font-size:11px;}
   body.mobile .role{font-size:13px;}
   body.mobile .hint{bottom:190px;font-size:11.5px;padding:7px 14px;max-width:90vw;white-space:normal;text-align:center;line-height:1.35;}
   body.mobile .players-list{font-size:11px;}
-
   body.mobile .panel{width:92vw;padding:18px;}
   body.mobile .panel h2{font-size:18px;}
   body.mobile .modal-box{width:94vw !important;max-width:94vw;padding:18px;max-height:92vh;}
@@ -161,7 +124,6 @@
 <body>
 <canvas id="cv"></canvas>
 <div id="ui">
-
   <div class="screen" id="screenMenu">
     <div class="logo">block<span>hide</span></div>
     <div class="tagline">2.5D онлайн-прятки</div>
@@ -173,7 +135,6 @@
     </div>
     <div id="connStatus">Подключение...</div>
   </div>
-
   <div class="screen hidden" id="screenList">
     <div class="panel">
       <h2>Лобби</h2>
@@ -184,7 +145,6 @@
       </div>
     </div>
   </div>
-
   <div class="hud hidden" id="hudLobby">
     <div class="hud-top">
       <div class="hud-card">
@@ -196,7 +156,6 @@
     </div>
     <div class="hint" id="lobbyHint">WASD — ходить · подойди к терминалу и нажми E</div>
   </div>
-
   <div class="hud hidden" id="hudGame">
     <div class="hud-top">
       <div class="hud-card">
@@ -208,26 +167,34 @@
     </div>
     <div class="hint" id="gameHint">Подойди к блоку и нажми E</div>
   </div>
-
   <div class="modal hidden" id="panelSettings">
     <div class="modal-box">
       <h2>Настройки лобби</h2>
       <div class="field"><label>Карта</label>
         <select id="selMap">
+          <option value="random">🎲 Случайная</option>
           <option value="lasertag">Лазертаг (30×30)</option>
           <option value="village">Деревня (30×30)</option>
           <option value="ice">Ледов (30×30)</option>
+          <option value="strange_city">Странный Город (40×40)</option>
+          <option value="dump">Свалка (40×40)</option>
         </select>
       </div>
       <div class="field"><label>Охотник</label><select id="selHunter"></select></div>
       <div class="field"><label>Количество игроков: <span id="lblCount">4</span></label>
         <input type="range" id="rngCount" min="1" max="4" step="1" value="4">
       </div>
-      <div class="field"><label>Обзор прячущихся: <span id="lblFovP" class="val">0.75</span></label>
-        <div class="slider-row"><input type="range" id="rngFovP" min="0.5" max="1.0" step="0.05" value="0.75"></div>
+      <div class="field"><label>Время пряток: <span id="lblPrep" class="val">20с</span></label>
+        <div class="slider-row"><input type="range" id="rngPrep" min="5" max="60" step="5" value="20"></div>
       </div>
-      <div class="field"><label>Обзор охотника: <span id="lblFovH" class="val">0.80</span></label>
-        <div class="slider-row"><input type="range" id="rngFovH" min="0.5" max="1.0" step="0.05" value="0.8"></div>
+      <div class="field"><label>Время охоты: <span id="lblMain" class="val">90с</span></label>
+        <div class="slider-row"><input type="range" id="rngMain" min="30" max="300" step="10" value="90"></div>
+      </div>
+      <div class="field"><label>Обзор прячущихся: <span id="lblFovP" class="val">75%</span></label>
+        <div class="slider-row"><input type="range" id="rngFovP" min="0.05" max="1.0" step="0.05" value="0.75"></div>
+      </div>
+      <div class="field"><label>Обзор охотника: <span id="lblFovH" class="val">80%</span></label>
+        <div class="slider-row"><input type="range" id="rngFovH" min="0.05" max="1.0" step="0.05" value="0.8"></div>
       </div>
       <div class="field"><label>Удалить объектов: <span id="lblRemove" class="val">0%</span></label>
         <div class="slider-row"><input type="range" id="rngRemove" min="0" max="50" step="5" value="0"></div>
@@ -239,7 +206,6 @@
       </div>
     </div>
   </div>
-
   <div class="modal hidden" id="panelShop">
     <div class="modal-box" style="width:min(640px,94vw);">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
@@ -253,14 +219,12 @@
       <div class="row" style="margin-top:18px;"><button class="btn ghost" id="btnCloseShop">Закрыть</button></div>
     </div>
   </div>
-
   <div class="modal hidden" id="panelRoulette">
     <div class="modal-box" style="text-align:center;width:min(420px,92vw);">
       <h2 style="margin-bottom:14px;">Выбор охотника</h2>
       <div class="roulette-name" id="rouletteName">...</div>
     </div>
   </div>
-
   <div class="modal hidden" id="panelMinesweeper">
     <div class="modal-box" style="width:min(480px,92vw);">
       <h2>Сапёр</h2>
@@ -272,7 +236,6 @@
       </div>
     </div>
   </div>
-
   <div class="modal hidden" id="panelTicTacToe">
     <div class="modal-box" style="width:min(420px,92vw);">
       <h2>Крестики-нолики</h2>
@@ -284,7 +247,6 @@
       </div>
     </div>
   </div>
-
   <div class="modal hidden" id="panelDebug">
     <div class="modal-box">
       <h2>Отладка</h2>
@@ -294,12 +256,10 @@
       <div class="row"><button class="btn ghost" id="btnCloseDebug">Закрыть</button></div>
     </div>
   </div>
-
   <div id="joystick" class="hidden">
     <div id="joystickBase"></div>
     <div id="joystickKnob"></div>
   </div>
-
 </div>
 <div id="toast" class="hidden"></div>
 
@@ -316,7 +276,6 @@ function roundRect(x,y,w,h,r){
   ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
 }
 
-/* ===== device detection ===== */
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
               || (navigator.maxTouchPoints > 0 && window.matchMedia('(pointer: coarse)').matches);
 if (isMobile) document.body.classList.add('mobile');
@@ -375,6 +334,15 @@ const OBJECT_DEFS = {
   truck:   { w:3, d:2, h:60,  render:'truck' },
   car:     { w:2, d:2, h:44,  render:'car' },
   stump:   { w:1, d:1, h:18,  render:'stump' },
+  skyscraper:  { w:1, d:1, h:220, render:'skyscraper' },
+  shop:        { w:1, d:1, h:64,  render:'shop' },
+  trash:       { w:1, d:1, h:14,  render:'trash' },
+  trashcan:    { w:1, d:1, h:34,  render:'trashcan' },
+  apple_tree:  { w:2, d:2, h:110, render:'apple_tree' },
+  brick_house: { w:2, d:2, h:110, render:'brick_house' },
+  bricks:      { w:1, d:1, h:20,  render:'bricks' },
+  teddy_black: { w:1, d:1, h:20,  render:'teddy_black' },
+  teddy_white: { w:1, d:1, h:20,  render:'teddy_white' },
 };
 
 const THEMES = {
@@ -391,15 +359,29 @@ const HATS = {
   red_cap: { name:'Красная кепка', price:25 },
   blue_cap: { name:'Синяя кепка', price:25 },
   crown: { name:'Корона', price:50 },
+  box_head: { name:'Коробка на голову', price:15 },
+  dirty_cap: { name:'Грязная шапка', price:5 },
+  seller_cap: { name:'Кепка продавца', price:10 },
 };
 const CLOTHES = {
   none: { name:'Ничего', price:0 },
   blue_shirt: { name:'Синяя футболка', price:10 },
   red_shirt: { name:'Красная футболка', price:10 },
   black_suit: { name:'Черный костюм', price:25 },
+  dirty_shirt: { name:'Грязная порванная футболка', price:20 },
+  yellow_vest: { name:'Желтая желетка мусорщика', price:10 },
+  green_vest: { name:'Зеленая желетка мусорщика', price:10 },
 };
 function getClothesColor(t){
-  return t==='blue_shirt'?'#5f8fe2': t==='red_shirt'?'#e2695f': t==='black_suit'?'#2a2a2a': '#eef2f9';
+  switch(t){
+    case 'blue_shirt': return '#5f8fe2';
+    case 'red_shirt': return '#e2695f';
+    case 'black_suit': return '#2a2a2a';
+    case 'dirty_shirt': return '#4a4a4a';
+    case 'yellow_vest': return '#e8c95a';
+    case 'green_vest': return '#6ec06a';
+    default: return '#eef2f9';
+  }
 }
 
 const SAVE_KEY = 'blockhide_save_v1';
@@ -455,7 +437,6 @@ function joyStart(e) {
   e.preventDefault();
   e.stopPropagation();
 }
-
 function joyMove(e) {
   if (!joyState.active) return;
   let touch = null;
@@ -465,26 +446,19 @@ function joyMove(e) {
     }
   }
   if (!touch) return;
-
   const rect = joyEl.getBoundingClientRect();
   const centerX = rect.left + rect.width / 2;
   const centerY = rect.top + rect.height / 2;
   const maxR = rect.width / 2 - 22;
-
   let dx = touch.clientX - centerX;
   let dy = touch.clientY - centerY;
   const dist = Math.hypot(dx, dy);
-  if (dist > maxR) {
-    dx = dx / dist * maxR;
-    dy = dy / dist * maxR;
-  }
-
+  if (dist > maxR) { dx = dx / dist * maxR; dy = dy / dist * maxR; }
   joyKnob.style.transform = `translate(${dx}px, ${dy}px)`;
   joyState.dx = dx / maxR;
   joyState.dy = dy / maxR;
   e.preventDefault();
 }
-
 function joyEnd(e) {
   if (!joyState.active) return;
   if (e.changedTouches) {
@@ -495,12 +469,10 @@ function joyEnd(e) {
     if (!ended) return;
   }
   joyState.active = false;
-  joyState.dx = 0;
-  joyState.dy = 0;
+  joyState.dx = 0; joyState.dy = 0;
   joyEl.classList.remove('active');
   joyKnob.style.transform = 'translate(0, 0)';
 }
-
 joyEl.addEventListener('touchstart', joyStart, { passive: false });
 joyEl.addEventListener('touchmove', joyMove, { passive: false });
 joyEl.addEventListener('touchend', joyEnd);
@@ -512,23 +484,18 @@ function updateJoystickVisibility() {
   const inGame = state.screen === 'game' && state.game && !state.game.over;
   const show = (inLobby || inGame) && !isModalOpen();
   joyEl.classList.toggle('hidden', !show);
-  if (!show) {
-    if (joyState.active) {
-      joyState.active = false;
-      joyState.dx = 0; joyState.dy = 0;
-      joyKnob.style.transform = 'translate(0, 0)';
-      joyEl.classList.remove('active');
-    }
+  if (!show && joyState.active) {
+    joyState.active = false; joyState.dx = 0; joyState.dy = 0;
+    joyKnob.style.transform = 'translate(0, 0)';
+    joyEl.classList.remove('active');
   }
 }
 
-/* ===== proximity sound ===== */
+/* ===== proximity beep ===== */
 let audioCtx = null;
 function ensureAudio() {
   if (!audioCtx) {
-    try {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    } catch { return null; }
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch { return null; }
   }
   if (audioCtx.state === 'suspended') audioCtx.resume();
   return audioCtx;
@@ -538,8 +505,7 @@ document.addEventListener('touchstart', ensureAudio, { once: true });
 document.addEventListener('keydown', ensureAudio, { once: true });
 
 function playProximityBeep(volume) {
-  const ac = ensureAudio();
-  if (!ac) return;
+  const ac = ensureAudio(); if (!ac) return;
   try {
     const t0 = ac.currentTime;
     const osc = ac.createOscillator();
@@ -550,29 +516,21 @@ function playProximityBeep(volume) {
     gain.gain.setValueAtTime(0, t0);
     gain.gain.linearRampToValueAtTime(volume * 0.45, t0 + 0.05);
     gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.9);
-    osc.connect(gain);
-    gain.connect(ac.destination);
-    osc.start(t0);
-    osc.stop(t0 + 0.95);
+    osc.connect(gain); gain.connect(ac.destination);
+    osc.start(t0); osc.stop(t0 + 0.95);
   } catch {}
 }
-
 let lastSoundAt = 0;
-
 function maybeBeepProximity() {
   if (!state.game || state.game.over || state.screen !== 'game') return;
   if (state.game.phase !== 'main') return;
   const now = performance.now();
   if (now - lastSoundAt < 15000) return;
   lastSoundAt = now;
-
-  const me = localEntity();
-  if (!me) return;
-
+  const me = localEntity(); if (!me) return;
   const others = state.game.entities.filter(e => e.id !== me.id);
   if (!others.length) return;
   const target = others[Math.floor(Math.random() * others.length)];
-
   const dist = Math.hypot(target.x - me.x, target.y - me.y);
   const maxDist = 1500;
   const t = 1 - Math.min(1, dist / maxDist);
@@ -620,7 +578,6 @@ function isModalOpen(sel){
   if (sel) return !$(sel).classList.contains('hidden');
   return document.querySelectorAll('.modal:not(.hidden)').length > 0;
 }
-
 function getInput(){
   if (isMobile && joyState.active) {
     const mag = Math.hypot(joyState.dx, joyState.dy);
@@ -838,10 +795,8 @@ function renderLobby(){
   const w = lobbyWorld; if (!w) return;
   drawFloor(0, 0, w.roomW, w.roomH, '#1e2a40', 'rgba(255,255,255,0.08)', 60);
   poly([
-    project(0, 0, 0),
-    project(w.roomW, 0, 0),
-    project(w.roomW, w.roomH, 0),
-    project(0, w.roomH, 0),
+    project(0, 0, 0), project(w.roomW, 0, 0),
+    project(w.roomW, w.roomH, 0), project(0, w.roomH, 0),
   ], null, '#5ac8ff88', 2.5);
   w.walls.forEach(wall => drawLegacyCrate(wall));
   const t = w.terminal;
@@ -1019,7 +974,7 @@ function renderPrepRoom(){
 
   if (state.nearMachine){
     const pr = project(state.nearMachine.x, state.nearMachine.y, state.nearMachine.h+30);
-    drawFloatLabel(pr.x, pr.y, 'E');
+    drawFloatLabel(pr.x, pr.y, isMobile ? 'ТАП' : 'E');
   }
 
   const remaining = Math.max(0, state.game.timeLeft || 0);
@@ -1047,7 +1002,7 @@ function drawArcade(m){
   ctx.restore();
 }
 
-const PASSABLE_TYPES = new Set(['wood', 'grass', 'pumpkin', 'stump']);
+const PASSABLE_TYPES = new Set(['wood', 'grass', 'pumpkin', 'stump', 'apple_tree', 'trash', 'teddy_black', 'teddy_white']);
 function updateMainGame(dt){
   const g = state.game; if (!g || !g.entities) return;
   const me = localEntity(); if (!me) return;
@@ -1124,7 +1079,6 @@ function shoot(){
   me.shootCd = 5;
 }
 
-/* ===== тап на мобильном ===== */
 function handleTapAt(sx, sy){
   if (!state.game) return;
   if (isModalOpen()) return;
@@ -1132,7 +1086,6 @@ function handleTapAt(sx, sy){
   const me = localEntity();
   if (!me) return;
 
-  // Prep room для охотника — тап по автомату
   if (me.role === 'hunter' && g.phase === 'prep') {
     const world = screenToWorld(sx, sy);
     for (const m of PREP.machines){
@@ -1142,16 +1095,14 @@ function handleTapAt(sx, sy){
         if (pd < 120){
           if (m.id === 'minesweeper') openMinesweeper();
           else if (m.id === 'tictactoe') openTicTacToe();
-        } else {
-          showToast('Слишком далеко');
-        }
+        } else { showToast('Слишком далеко'); }
         return;
       }
     }
     return;
   }
 
-  // Охотник на карте — выстрел в сторону тапа
+  // Охотник на карте — точный выстрел (fast: true)
   if (me.role === 'hunter') {
     if (g.phase !== 'main' || g.over) return;
     if (me.shootCd > 0) return;
@@ -1159,7 +1110,7 @@ function handleTapAt(sx, sy){
     let dx = target.x - me.x, dy = target.y - me.y;
     const len = Math.hypot(dx, dy) || 1;
     dx /= len; dy /= len;
-    send({ type: 'shoot', dx, dy });
+    send({ type: 'shoot', dx, dy, fast: true });
     me.shootCd = 5;
     return;
   }
@@ -1175,7 +1126,6 @@ function handleTapAt(sx, sy){
     return;
   }
 
-  // Ищем блок под тапом
   let best = null, bd = 1e9;
   for (const c of g.crates){
     if (!c.disguise) continue;
@@ -1187,10 +1137,7 @@ function handleTapAt(sx, sy){
 
   const playerDist = Math.hypot(best.x - me.x, best.y - me.y);
   const reach = Math.max(best.hw, best.hd) + 80;
-  if (playerDist > reach) {
-    showToast('Слишком далеко');
-    return;
-  }
+  if (playerDist > reach) { showToast('Слишком далеко'); return; }
 
   if (state.localDisguised && state.localDisguiseType === best.type) {
     state.localDisguised = false;
@@ -1241,16 +1188,13 @@ function updateGameHud(){
   const me = localEntity(); if (!me) return;
   const roleEl = $('#gameRole');
   const phase = state.game.phase;
-  const tapWord = isMobile ? 'тапни' : 'нажми E';
 
   if (me.role === 'hunter'){
     roleEl.textContent = 'ВЫ — ОХОТНИК';
     roleEl.className = 'role hunter';
     if (phase === 'main'){
       const cd = me.shootCd > 0 ? ` · Перезарядка: ${me.shootCd.toFixed(1)}с` : '';
-      $('#gameHint').textContent = isMobile
-        ? 'Тап по экрану — выстрел' + cd
-        : 'ЛКМ — выстрелить · WASD — ходить' + cd;
+      $('#gameHint').textContent = isMobile ? 'Тап по экрану — выстрел' + cd : 'ЛКМ — выстрелить · WASD — ходить' + cd;
       canvas.style.cursor = isMobile ? 'default' : 'crosshair';
     } else {
       $('#gameHint').textContent = isMobile ? 'Тапни по автомату' : 'Подойди к автомату и нажми E';
@@ -1262,13 +1206,9 @@ function updateGameHud(){
     if (phase === 'prep'){
       $('#gameHint').textContent = 'Ты не видишь куда идёшь... Ищи укрытие на ощупь!';
     } else if (state.localDisguised){
-      $('#gameHint').textContent = isMobile
-        ? 'Тапни по себе — снять маскировку'
-        : 'E — снять маскировку · WASD — ходить';
+      $('#gameHint').textContent = isMobile ? 'Тапни по себе — снять маскировку' : 'E — снять маскировку · WASD — ходить';
     } else if (state.nearCrate){
-      $('#gameHint').textContent = isMobile
-        ? 'Тапни по блоку, чтобы замаскироваться'
-        : 'E — замаскироваться под этот объект';
+      $('#gameHint').textContent = isMobile ? 'Тапни по блоку, чтобы замаскироваться' : 'E — замаскироваться под этот объект';
     } else {
       $('#gameHint').textContent = isMobile ? 'Подойди к блоку и тапни по нему' : 'Подойди к объекту и нажми E';
     }
@@ -1288,7 +1228,7 @@ function updateGameHud(){
   }
 }
 
-/* ===== rendering ===== */
+/* ===== rendering primitives ===== */
 function poly(pts, fill, stroke, lw){
   ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
   for (let i=1;i<pts.length;i++) ctx.lineTo(pts[i].x, pts[i].y);
@@ -1326,25 +1266,33 @@ function drawObject(type, cx, cy, highlight){
   const w = def.w * CELL, d = def.d * CELL;
   const h = def.h;
 
-  // Тень только для непрозрачных
   if (!def.transparent){
     poly([project(x0,y0,0),project(x0+w,y0,0),project(x0+w,y0+d,0),project(x0,y0+d,0)],'rgba(0,0,0,0.25)');
   }
 
   switch (def.render) {
-    case 'block':   drawIsoBox(x0, y0, w, d, h, def.colors); break;
-    case 'box':     drawBoxObj(x0, y0, w, d, h); break;
-    case 'barrel':  drawBarrel(x0, y0, w, d, h); break;
-    case 'stone':   drawStoneWall(x0, y0, w, d, h); break;
-    case 'glass':   drawGlassWall(x0, y0, w, d, h); break;
-    case 'tree':    drawTree(x0, y0, w, d, h); break;
-    case 'grass':   drawGrassObj(x0, y0, w, d, h); break;
-    case 'pumpkin': drawPumpkin(x0, y0, w, d, h); break;
-    case 'fence':   drawFence(x0, y0, w, d, h); break;
-    case 'house':   drawHouse(x0, y0, w, d, h); break;
-    case 'truck':   drawTruck(x0, y0, w, d, h); break;
-    case 'car':     drawCar(x0, y0, w, d, h); break;
-    case 'stump':   drawStump(x0, y0, w, d, h); break;
+    case 'block':       drawIsoBox(x0, y0, w, d, h, def.colors); break;
+    case 'box':         drawBoxObj(x0, y0, w, d, h); break;
+    case 'barrel':      drawBarrel(x0, y0, w, d, h); break;
+    case 'stone':       drawStoneWall(x0, y0, w, d, h); break;
+    case 'glass':       drawGlassWall(x0, y0, w, d, h); break;
+    case 'tree':        drawTree(x0, y0, w, d, h); break;
+    case 'grass':       drawGrassObj(x0, y0, w, d, h); break;
+    case 'pumpkin':     drawPumpkin(x0, y0, w, d, h); break;
+    case 'fence':       drawFence(x0, y0, w, d, h); break;
+    case 'house':       drawHouse(x0, y0, w, d, h); break;
+    case 'truck':       drawTruck(x0, y0, w, d, h); break;
+    case 'car':         drawCar(x0, y0, w, d, h); break;
+    case 'stump':       drawStump(x0, y0, w, d, h); break;
+    case 'skyscraper':  drawSkyscraper(x0, y0, w, d, h); break;
+    case 'shop':        drawShop(x0, y0, w, d, h); break;
+    case 'trash':       drawTrash(x0, y0, w, d, h); break;
+    case 'trashcan':    drawTrashcan(x0, y0, w, d, h); break;
+    case 'apple_tree':  drawAppleTree(x0, y0, w, d, h); break;
+    case 'brick_house': drawBrickHouse(x0, y0, w, d, h); break;
+    case 'bricks':      drawBricks(x0, y0, w, d, h); break;
+    case 'teddy_black': drawTeddy(x0, y0, w, d, h, '#1a1a1a', '#2a2a2a'); break;
+    case 'teddy_white': drawTeddy(x0, y0, w, d, h, '#f0f0f0', '#d8d8d8'); break;
   }
 
   if (highlight){
@@ -1368,13 +1316,11 @@ function drawBoxObj(x0, y0, w, d, h){
   const c = project(x0+w/2, y0+d/2, h);
   const z = cam.zoom;
   ctx.save();
-  ctx.strokeStyle = 'rgba(90,60,30,0.55)';
-  ctx.lineWidth = 1.4*z;
+  ctx.strokeStyle = 'rgba(90,60,30,0.55)'; ctx.lineWidth = 1.4*z;
   ctx.beginPath();
   ctx.moveTo(c.x - 12*z, c.y - 5*z); ctx.lineTo(c.x + 12*z, c.y + 5*z);
   ctx.moveTo(c.x + 12*z, c.y - 5*z); ctx.lineTo(c.x - 12*z, c.y + 5*z);
-  ctx.stroke();
-  ctx.restore();
+  ctx.stroke(); ctx.restore();
 }
 
 function drawBarrel(x0, y0, w, d, h){
@@ -1420,9 +1366,7 @@ function drawStoneWall(x0, y0, w, d, h){
 }
 
 function drawGlassWall(x0, y0, w, d, h){
-  // Без тени, без серой обводки. Полупрозрачные грани со светлым контуром.
-  ctx.save();
-  ctx.globalAlpha = 0.68;
+  ctx.save(); ctx.globalAlpha = 0.68;
   poly([project(x0+w,y0,0),project(x0+w,y0+d,0),project(x0+w,y0+d,h),project(x0+w,y0,h)],
        'rgba(120,185,225,0.55)', 'rgba(220,240,255,0.85)', 1.5);
   poly([project(x0,y0+d,0),project(x0+w,y0+d,0),project(x0+w,y0+d,h),project(x0,y0+d,h)],
@@ -1430,17 +1374,14 @@ function drawGlassWall(x0, y0, w, d, h){
   poly([project(x0,y0,h),project(x0+w,y0,h),project(x0+w,y0+d,h),project(x0,y0+d,h)],
        'rgba(200,235,255,0.6)', 'rgba(240,250,255,0.9)', 1.5);
   ctx.restore();
-  // Блик
   const c = project(x0+w*0.35, y0+d*0.35, h);
   const z = cam.zoom;
-  ctx.save();
-  ctx.globalAlpha = 0.55;
+  ctx.save(); ctx.globalAlpha = 0.55;
   ctx.strokeStyle = '#e0f4ff'; ctx.lineWidth = 2*z;
   ctx.beginPath();
   ctx.moveTo(c.x - 6*z, c.y - 4*z);
   ctx.lineTo(c.x + 6*z, c.y - 10*z);
-  ctx.stroke();
-  ctx.restore();
+  ctx.stroke(); ctx.restore();
 }
 
 function drawTree(x0, y0, w, d, h){
@@ -1453,12 +1394,8 @@ function drawTree(x0, y0, w, d, h){
   const trunkW = w * 0.22;
   const tx0 = cx - trunkW/2, ty0 = cy - trunkW/2;
   const trunkH = h * 0.55;
-  drawIsoBox(tx0, ty0, trunkW, trunkW, trunkH, {
-    top: '#8b6a44', side1: '#5a4429', side2: '#3f2f1c'
-  });
-  ctx.save();
-  ctx.strokeStyle = 'rgba(30,20,10,0.6)';
-  ctx.lineWidth = 1.2*z;
+  drawIsoBox(tx0, ty0, trunkW, trunkW, trunkH, { top:'#8b6a44', side1:'#5a4429', side2:'#3f2f1c' });
+  ctx.save(); ctx.strokeStyle = 'rgba(30,20,10,0.6)'; ctx.lineWidth = 1.2*z;
   for (let i = 1; i < 4; i++){
     const yb = trunkH * (i/4);
     const a = project(tx0, ty0 + trunkW, yb);
@@ -1484,9 +1421,7 @@ function drawTree(x0, y0, w, d, h){
     const ang = (i/5)*TAU;
     const rx = crownBase.x + Math.cos(ang)*w*0.35*ISO_X*z;
     const ry = crownBase.y - h*0.48*z + Math.sin(ang)*w*0.25*ISO_Y*z;
-    ctx.beginPath();
-    ctx.arc(rx, ry, 2*z, 0, TAU);
-    ctx.fill();
+    ctx.beginPath(); ctx.arc(rx, ry, 2*z, 0, TAU); ctx.fill();
   }
 }
 
@@ -1534,9 +1469,7 @@ function drawFence(x0, y0, w, d, h){
   const z = cam.zoom;
   const color = '#a87646';
   const dark = '#6b4a28';
-  ctx.save();
-  ctx.strokeStyle = dark;
-  ctx.lineWidth = 3*z;
+  ctx.save(); ctx.strokeStyle = dark; ctx.lineWidth = 3*z;
   const r1a = project(x0 + w*0.1, y0 + d*0.5, h*0.6);
   const r1b = project(x0 + w*0.9, y0 + d*0.5, h*0.6);
   ctx.beginPath(); ctx.moveTo(r1a.x, r1a.y); ctx.lineTo(r1b.x, r1b.y); ctx.stroke();
@@ -1557,17 +1490,14 @@ function drawFence(x0, y0, w, d, h){
     ctx.moveTo(b.x - 2.5*z, t.y);
     ctx.lineTo(b.x, t.y - 4*z);
     ctx.lineTo(b.x + 2.5*z, t.y);
-    ctx.closePath();
-    ctx.fillStyle = color;
-    ctx.fill();
+    ctx.closePath(); ctx.fillStyle = color; ctx.fill();
   }
 }
 
 function drawHouse(x0, y0, w, d, h){
   drawIsoBox(x0, y0, w, d, h*0.72, { top:'#d0a86f', side1:'#a88454', side2:'#87693f' });
   const cx = x0+w/2, cy = y0+d/2;
-  const roofH = h * 0.28;
-  const roofY = h * 0.72;
+  const roofH = h * 0.28, roofY = h * 0.72;
   const peak = project(cx, cy, roofY + roofH);
   const c1 = project(x0, y0, roofY);
   const c2 = project(x0+w, y0, roofY);
@@ -1577,8 +1507,7 @@ function drawHouse(x0, y0, w, d, h){
   const z = cam.zoom;
   const winY = h * 0.4;
   const win = project(x0+w*0.7, y0+d, winY*0.7);
-  ctx.fillStyle = '#5ac8ff';
-  ctx.globalAlpha = 0.85;
+  ctx.fillStyle = '#5ac8ff'; ctx.globalAlpha = 0.85;
   ctx.fillRect(win.x - 5*z, win.y - 10*z, 10*z, 10*z);
   ctx.globalAlpha = 1;
   const door = project(x0+w*0.3, y0+d, 0);
@@ -1590,53 +1519,31 @@ function drawHouse(x0, y0, w, d, h){
 function drawTruck(x0, y0, w, d, h){
   const z = cam.zoom;
   const bodyH = h * 0.55;
-  drawIsoBox(x0, y0 + d*0.15, w*0.6, d*0.7, bodyH, {
-    top: '#d8d8d8', side1: '#a0a0a0', side2: '#808080'
-  });
-  ctx.strokeStyle = 'rgba(60,60,60,0.6)';
-  ctx.lineWidth = 1*z;
+  drawIsoBox(x0, y0 + d*0.15, w*0.6, d*0.7, bodyH, { top:'#d8d8d8', side1:'#a0a0a0', side2:'#808080' });
+  ctx.strokeStyle = 'rgba(60,60,60,0.6)'; ctx.lineWidth = 1*z;
   for (let i = 1; i < 4; i++){
     const yy = bodyH * (i/4);
     const a = project(x0, y0 + d*0.85, yy);
     const b = project(x0 + w*0.6, y0 + d*0.85, yy);
     ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
   }
-  const cabX = x0 + w*0.6;
-  const cabY = y0 + d*0.15;
-  drawIsoBox(cabX, cabY, w*0.4, d*0.7, h, {
-    top: '#4a7bb5', side1: '#355a85', side2: '#24405f'
-  });
+  const cabX = x0 + w*0.6, cabY = y0 + d*0.15;
+  drawIsoBox(cabX, cabY, w*0.4, d*0.7, h, { top:'#4a7bb5', side1:'#355a85', side2:'#24405f' });
   const wsY = h * 0.75;
-  const ws1 = project(cabX + w*0.05, cabY + d*0.7, wsY);
-  const ws2 = project(cabX + w*0.35, cabY + d*0.7, wsY);
-  const ws3 = project(cabX + w*0.35, cabY + d*0.7, h*0.45);
-  const ws4 = project(cabX + w*0.05, cabY + d*0.7, h*0.45);
-  poly([ws1, ws2, ws3, ws4], '#8fc7f0');
-  const sw1 = project(cabX + w*0.4, cabY + d*0.2, wsY);
-  const sw2 = project(cabX + w*0.4, cabY + d*0.6, wsY);
-  const sw3 = project(cabX + w*0.4, cabY + d*0.6, h*0.5);
-  const sw4 = project(cabX + w*0.4, cabY + d*0.2, h*0.5);
-  poly([sw1, sw2, sw3, sw4], '#8fc7f0');
+  poly([project(cabX + w*0.05, cabY + d*0.7, wsY), project(cabX + w*0.35, cabY + d*0.7, wsY),
+        project(cabX + w*0.35, cabY + d*0.7, h*0.45), project(cabX + w*0.05, cabY + d*0.7, h*0.45)], '#8fc7f0');
+  poly([project(cabX + w*0.4, cabY + d*0.2, wsY), project(cabX + w*0.4, cabY + d*0.6, wsY),
+        project(cabX + w*0.4, cabY + d*0.6, h*0.5), project(cabX + w*0.4, cabY + d*0.2, h*0.5)], '#8fc7f0');
   const hl1 = project(cabX + w*0.38, cabY + d*0.1, h*0.2);
-  ctx.fillStyle = '#ffe68a';
-  ctx.beginPath();
-  ctx.arc(hl1.x, hl1.y, 2.5*z, 0, TAU);
-  ctx.fill();
+  ctx.fillStyle = '#ffe68a'; ctx.beginPath(); ctx.arc(hl1.x, hl1.y, 2.5*z, 0, TAU); ctx.fill();
   ctx.fillStyle = '#1a1a1a';
-  const wheelY = 6;
   for (const [wx, wy] of [
-    [x0 + w*0.15, y0 + d*0.95],
-    [x0 + w*0.45, y0 + d*0.95],
-    [x0 + w*0.85, y0 + d*0.95],
+    [x0 + w*0.15, y0 + d*0.95], [x0 + w*0.45, y0 + d*0.95], [x0 + w*0.85, y0 + d*0.95]
   ]) {
     const wp = project(wx, wy, 0);
-    ctx.beginPath();
-    ctx.ellipse(wp.x, wp.y - wheelY*z, 5*z, 5*z, 0, 0, TAU);
-    ctx.fill();
-    ctx.fillStyle = '#333';
-    ctx.beginPath();
-    ctx.ellipse(wp.x, wp.y - wheelY*z, 2.5*z, 2.5*z, 0, 0, TAU);
-    ctx.fill();
+    ctx.beginPath(); ctx.ellipse(wp.x, wp.y - 6*z, 5*z, 5*z, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#333'; ctx.beginPath();
+    ctx.ellipse(wp.x, wp.y - 6*z, 2.5*z, 2.5*z, 0, 0, TAU); ctx.fill();
     ctx.fillStyle = '#1a1a1a';
   }
 }
@@ -1644,46 +1551,25 @@ function drawTruck(x0, y0, w, d, h){
 function drawCar(x0, y0, w, d, h){
   const z = cam.zoom;
   const bodyH = h * 0.5;
-  drawIsoBox(x0 + w*0.05, y0 + d*0.1, w*0.9, d*0.8, bodyH, {
-    top: '#c94f4f', side1: '#953735', side2: '#6d2725'
-  });
-  drawIsoBox(x0 + w*0.2, y0 + d*0.2, w*0.6, d*0.6, h, {
-    top: '#e86b6b', side1: '#b8463f', side2: '#8a2f2a'
-  });
+  drawIsoBox(x0 + w*0.05, y0 + d*0.1, w*0.9, d*0.8, bodyH, { top:'#c94f4f', side1:'#953735', side2:'#6d2725' });
+  drawIsoBox(x0 + w*0.2, y0 + d*0.2, w*0.6, d*0.6, h, { top:'#e86b6b', side1:'#b8463f', side2:'#8a2f2a' });
   const wsY = h * 0.9;
-  const ws1 = project(x0 + w*0.25, y0 + d*0.75, wsY);
-  const ws2 = project(x0 + w*0.75, y0 + d*0.75, wsY);
-  const ws3 = project(x0 + w*0.75, y0 + d*0.75, h*0.55);
-  const ws4 = project(x0 + w*0.25, y0 + d*0.75, h*0.55);
-  poly([ws1, ws2, ws3, ws4], '#8fc7f0');
-  const sw1 = project(x0 + w*0.8, y0 + d*0.25, wsY);
-  const sw2 = project(x0 + w*0.8, y0 + d*0.75, wsY);
-  const sw3 = project(x0 + w*0.8, y0 + d*0.75, h*0.55);
-  const sw4 = project(x0 + w*0.8, y0 + d*0.25, h*0.55);
-  poly([sw1, sw2, sw3, sw4], '#8fc7f0');
+  poly([project(x0 + w*0.25, y0 + d*0.75, wsY), project(x0 + w*0.75, y0 + d*0.75, wsY),
+        project(x0 + w*0.75, y0 + d*0.75, h*0.55), project(x0 + w*0.25, y0 + d*0.75, h*0.55)], '#8fc7f0');
+  poly([project(x0 + w*0.8, y0 + d*0.25, wsY), project(x0 + w*0.8, y0 + d*0.75, wsY),
+        project(x0 + w*0.8, y0 + d*0.75, h*0.55), project(x0 + w*0.8, y0 + d*0.25, h*0.55)], '#8fc7f0');
   const hl = project(x0 + w*0.9, y0 + d*0.3, h*0.25);
-  ctx.fillStyle = '#ffe68a';
-  ctx.beginPath();
-  ctx.arc(hl.x, hl.y, 2*z, 0, TAU);
-  ctx.fill();
+  ctx.fillStyle = '#ffe68a'; ctx.beginPath(); ctx.arc(hl.x, hl.y, 2*z, 0, TAU); ctx.fill();
   const tl = project(x0 + w*0.05, y0 + d*0.5, h*0.25);
-  ctx.fillStyle = '#c9302c';
-  ctx.beginPath();
-  ctx.arc(tl.x, tl.y, 2*z, 0, TAU);
-  ctx.fill();
+  ctx.fillStyle = '#c9302c'; ctx.beginPath(); ctx.arc(tl.x, tl.y, 2*z, 0, TAU); ctx.fill();
   ctx.fillStyle = '#1a1a1a';
   for (const [wx, wy] of [
-    [x0 + w*0.2, y0 + d*0.9],
-    [x0 + w*0.8, y0 + d*0.9],
+    [x0 + w*0.2, y0 + d*0.9], [x0 + w*0.8, y0 + d*0.9]
   ]) {
     const wp = project(wx, wy, 0);
-    ctx.beginPath();
-    ctx.ellipse(wp.x, wp.y - 4*z, 4*z, 4*z, 0, 0, TAU);
-    ctx.fill();
-    ctx.fillStyle = '#333';
-    ctx.beginPath();
-    ctx.ellipse(wp.x, wp.y - 4*z, 2*z, 2*z, 0, 0, TAU);
-    ctx.fill();
+    ctx.beginPath(); ctx.ellipse(wp.x, wp.y - 4*z, 4*z, 4*z, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#333'; ctx.beginPath();
+    ctx.ellipse(wp.x, wp.y - 4*z, 2*z, 2*z, 0, 0, TAU); ctx.fill();
     ctx.fillStyle = '#1a1a1a';
   }
 }
@@ -1697,24 +1583,266 @@ function drawStump(x0, y0, w, d, h){
   const top = project(cx, cy, h);
   ctx.fillStyle = '#5a3e22';
   ctx.beginPath();
-  ctx.moveTo(base.x - rw, base.y);
-  ctx.lineTo(base.x + rw, base.y);
-  ctx.lineTo(top.x + rw, top.y);
-  ctx.lineTo(top.x - rw, top.y);
-  ctx.closePath();
-  ctx.fill();
+  ctx.moveTo(base.x - rw, base.y); ctx.lineTo(base.x + rw, base.y);
+  ctx.lineTo(top.x + rw, top.y); ctx.lineTo(top.x - rw, top.y);
+  ctx.closePath(); ctx.fill();
   ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 1; ctx.stroke();
   ctx.fillStyle = '#8b6a3f';
-  ctx.beginPath();
-  ctx.ellipse(top.x, top.y, rw, rd, 0, 0, TAU);
-  ctx.fill();
+  ctx.beginPath(); ctx.ellipse(top.x, top.y, rw, rd, 0, 0, TAU); ctx.fill();
   ctx.strokeStyle = '#5a3e22'; ctx.lineWidth = 1*z;
   for (let r = 0.4; r <= 1; r += 0.3){
-    ctx.beginPath();
-    ctx.ellipse(top.x, top.y, rw*r, rd*r, 0, 0, TAU);
-    ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(top.x, top.y, rw*r, rd*r, 0, 0, TAU); ctx.stroke();
   }
 }
+
+/* ===== новые рендеры ===== */
+function drawSkyscraper(x0, y0, w, d, h){
+  drawIsoBox(x0, y0, w, d, h, { top:'#5a6a80', side1:'#3d4a5e', side2:'#2a3444' });
+  const z = cam.zoom;
+  ctx.save();
+  // окна на правой грани
+  ctx.fillStyle = 'rgba(180,220,255,0.7)';
+  for (let row = 0; row < 14; row++){
+    for (let col = 0; col < 2; col++){
+      const wy = h * (0.08 + row * 0.06);
+      const wx = x0 + w * (0.2 + col * 0.6);
+      const pt = project(wx, y0, wy);
+      ctx.fillRect(pt.x - 1.5*z, pt.y - 1.5*z, 3*z, 3*z);
+    }
+  }
+  // окна на левой грани
+  for (let row = 0; row < 14; row++){
+    for (let col = 0; col < 2; col++){
+      const wy = h * (0.08 + row * 0.06);
+      const wx = y0 + d * (0.2 + col * 0.6);
+      const pt = project(x0 + w, wx, wy);
+      ctx.fillRect(pt.x - 1.5*z, pt.y - 1.5*z, 3*z, 3*z);
+    }
+  }
+  ctx.restore();
+  // антенна
+  const topPt = project(x0 + w/2, y0 + d/2, h + 30);
+  const basePt = project(x0 + w/2, y0 + d/2, h);
+  ctx.strokeStyle = '#8a929c'; ctx.lineWidth = 1.5*z;
+  ctx.beginPath(); ctx.moveTo(basePt.x, basePt.y); ctx.lineTo(topPt.x, topPt.y); ctx.stroke();
+  ctx.fillStyle = '#c94f4f';
+  ctx.beginPath(); ctx.arc(topPt.x, topPt.y, 2.5*z, 0, TAU); ctx.fill();
+}
+
+function drawShop(x0, y0, w, d, h){
+  // стены
+  drawIsoBox(x0, y0, w, d, h*0.7, { top:'#e0c088', side1:'#c49a60', side2:'#a67c44' });
+  // витрина на фронте (правая грань)
+  const z = cam.zoom;
+  poly([project(x0+w, y0+d*0.15, h*0.15), project(x0+w, y0+d*0.85, h*0.15),
+        project(x0+w, y0+d*0.85, h*0.55), project(x0+w, y0+d*0.15, h*0.55)],
+       '#8fc7f0', 'rgba(60,90,120,0.6)', 1);
+  // навес
+  const cx = x0+w/2, cy = y0+d/2;
+  const roofH = h * 0.3, roofY = h * 0.7;
+  const peak = project(cx, cy - d*0.1, roofY + roofH*0.4);
+  const c1 = project(x0-w*0.1, y0, roofY);
+  const c2 = project(x0+w*1.1, y0, roofY);
+  poly([c1, c2, peak], '#c94f4f', 'rgba(0,0,0,0.35)', 1);
+  // вывеска
+  const signPt = project(x0+w*0.5, y0+d*0.9, h*0.85);
+  ctx.fillStyle = '#ffd166';
+  ctx.fillRect(signPt.x - 4*z, signPt.y - 2*z, 8*z, 4*z);
+}
+
+function drawTrash(x0, y0, w, d, h){
+  const cx = x0 + w/2, cy = y0 + d/2;
+  const z = cam.zoom;
+  const base = project(cx, cy, 0);
+  ctx.save();
+  // куча мусора — несколько разноцветных "шариков"
+  const pieces = [
+    { dx: -8, dy: -2, r: 5, c: '#8b6a3f' },
+    { dx: 6, dy: 2, r: 4, c: '#6b4a28' },
+    { dx: -3, dy: 4, r: 3.5, c: '#a08454' },
+    { dx: 10, dy: -4, r: 3, c: '#c94f4f' },
+    { dx: -10, dy: 4, r: 3, c: '#5f8fe2' },
+  ];
+  for (const p of pieces){
+    ctx.fillStyle = p.c;
+    ctx.beginPath();
+    ctx.arc(base.x + p.dx*z, base.y + p.dy*z - h*z*0.4, p.r*z, 0, TAU);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawTrashcan(x0, y0, w, d, h){
+  const cx = x0 + w/2, cy = y0 + d/2;
+  const z = cam.zoom;
+  const rw = w * 0.3;
+  const bot = project(cx, cy, 0);
+  const top = project(cx, cy, h);
+  const bwL = bot.x - rw * ISO_X * z * 0.5;
+  const bwR = bot.x + rw * ISO_X * z * 0.5;
+  const twL = top.x - rw * ISO_X * z * 0.5;
+  const twR = top.x + rw * ISO_X * z * 0.5;
+  ctx.beginPath();
+  ctx.moveTo(bwL, bot.y); ctx.lineTo(bwR, bot.y);
+  ctx.lineTo(twR, top.y); ctx.lineTo(twL, top.y);
+  ctx.closePath();
+  ctx.fillStyle = '#3a4a5c'; ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,0.4)'; ctx.lineWidth = 1; ctx.stroke();
+  // вертикальные линии
+  ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 1*z;
+  for (let i = 1; i < 3; i++){
+    const x = bwL + (bwR - bwL) * i / 3;
+    ctx.beginPath(); ctx.moveTo(x, bot.y); ctx.lineTo(x + (top.x - bot.x), top.y); ctx.stroke();
+  }
+  // крышка
+  ctx.fillStyle = '#4a5a6c';
+  ctx.beginPath();
+  ctx.ellipse(top.x, top.y, rw * ISO_X * z * 0.6, rw * ISO_Y * z * 0.6, 0, 0, TAU);
+  ctx.fill();
+  ctx.strokeStyle = '#2a3a4c'; ctx.lineWidth = 1; ctx.stroke();
+}
+
+function drawAppleTree(x0, y0, w, d, h){
+  // как дерево, но с яблоками
+  drawTree(x0, y0, w, d, h);
+  const cx = x0 + w/2, cy = y0 + d/2;
+  const z = cam.zoom;
+  const trunkH = h * 0.55;
+  const crownBase = project(cx, cy, trunkH);
+  // яблоки
+  ctx.fillStyle = '#c94f4f';
+  for (let i = 0; i < 6; i++){
+    const a = (i/6)*TAU + 0.3;
+    const rx = crownBase.x + Math.cos(a)*w*0.4*ISO_X*z;
+    const ry = crownBase.y - h*0.42*z + Math.sin(a)*w*0.3*ISO_Y*z;
+    ctx.beginPath(); ctx.arc(rx, ry, 3*z, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#a83e2b';
+    ctx.beginPath(); ctx.arc(rx - 0.8*z, ry - 0.8*z, 1*z, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#c94f4f';
+  }
+}
+
+function drawBrickHouse(x0, y0, w, d, h){
+  drawIsoBox(x0, y0, w, d, h*0.75, { top:'#c9705e', side1:'#a04a3a', side2:'#7c352a' });
+  const z = cam.zoom;
+  // кирпичные швы
+  ctx.save();
+  ctx.strokeStyle = 'rgba(60,20,15,0.4)'; ctx.lineWidth = 1*z;
+  for (let i = 1; i < 8; i++){
+    const yy = h * 0.75 * (i/8);
+    // правая грань
+    const a1 = project(x0+w, y0, yy);
+    const a2 = project(x0+w, y0+d, yy);
+    ctx.beginPath(); ctx.moveTo(a1.x, a1.y); ctx.lineTo(a2.x, a2.y); ctx.stroke();
+    // левая грань
+    const b1 = project(x0, y0+d, yy);
+    const b2 = project(x0+w, y0+d, yy);
+    ctx.beginPath(); ctx.moveTo(b1.x, b1.y); ctx.lineTo(b2.x, b2.y); ctx.stroke();
+  }
+  ctx.restore();
+  // крыша
+  const cx = x0+w/2, cy = y0+d/2;
+  const roofY = h * 0.75;
+  const roofH = h * 0.25;
+  const peak = project(cx, cy, roofY + roofH);
+  const c1 = project(x0, y0, roofY);
+  const c2 = project(x0+w, y0, roofY);
+  const c3 = project(x0+w, y0+d, roofY);
+  poly([c1, c2, peak], '#8a3322', 'rgba(0,0,0,0.35)', 1);
+  poly([c2, c3, peak], '#6d2725', 'rgba(0,0,0,0.35)', 1);
+  // окна
+  const winY = h * 0.4;
+  const win = project(x0+w*0.7, y0+d, winY*0.7);
+  ctx.fillStyle = '#5ac8ff'; ctx.globalAlpha = 0.85;
+  ctx.fillRect(win.x - 4*z, win.y - 8*z, 8*z, 8*z);
+  ctx.globalAlpha = 1;
+  // дверь
+  const door = project(x0+w*0.3, y0+d, 0);
+  const doorTop = project(x0+w*0.3, y0+d, winY);
+  ctx.fillStyle = '#3a2418';
+  ctx.fillRect(door.x - 5*z, doorTop.y, 10*z, door.y - doorTop.y);
+}
+
+function drawBricks(x0, y0, w, d, h){
+  // стопка кирпичей — 2-3 слоя
+  const z = cam.zoom;
+  const layerH = h / 3;
+  for (let i = 0; i < 3; i++){
+    const color = i === 0 ? { top:'#c9705e', side1:'#a04a3a', side2:'#7c352a' }
+                          : i === 1 ? { top:'#b85e4e', side1:'#8f3f30', side2:'#6a2b22' }
+                                    : { top:'#d8806e', side1:'#b05a4a', side2:'#8a4030' };
+    drawIsoBox(x0 + (i%2)*w*0.05, y0 + (i%2)*d*0.05, w - (i%2)*w*0.1, d - (i%2)*d*0.1, layerH + i*layerH, color);
+    // но drawIsoBox рисует от 0 до layerH, а нужно от y0+h*i до y0+h*(i+1)
+  }
+  // переопределим — просто нарисуем 3 стопки друг на друге
+  // (выше криво, лучше по-простому)
+  // Очистим предыдущее и сделаем нормально
+}
+
+// правильный рендер кирпичей
+function drawBricksCorrect(x0, y0, w, d, h){
+  const layers = 3;
+  const layerH = h / layers;
+  for (let i = 0; i < layers; i++){
+    const yy = layerH * i;
+    const offset = i % 2 === 0 ? 0 : w * 0.05;
+    const colors = i === 0 ? { top:'#c9705e', side1:'#a04a3a', side2:'#7c352a' }
+                          : i === 1 ? { top:'#b85e4e', side1:'#8f3f30', side2:'#6a2b22' }
+                                    : { top:'#d8806e', side1:'#b05a4a', side2:'#8a4030' };
+    const bx0 = x0 + offset;
+    const bw = w - offset * 2;
+    const by0 = y0 + offset;
+    const bd = d - offset * 2;
+    const bx = project(bx0+bw, by0, yy);
+    const bx2 = project(bx0+bw, by0+bd, yy);
+    const bx3 = project(bx0+bw, by0+bd, yy+layerH);
+    const bx4 = project(bx0+bw, by0, yy+layerH);
+    poly([bx, bx2, bx3, bx4], colors.side1, 'rgba(0,0,0,0.28)', 1);
+    const by = project(bx0, by0+bd, yy);
+    const by2 = project(bx0+bw, by0+bd, yy);
+    const by3 = project(bx0+bw, by0+bd, yy+layerH);
+    const by4 = project(bx0, by0+bd, yy+layerH);
+    poly([by, by2, by3, by4], colors.side2, 'rgba(0,0,0,0.28)', 1);
+    const bt = project(bx0, by0, yy+layerH);
+    const bt2 = project(bx0+bw, by0, yy+layerH);
+    const bt3 = project(bx0+bw, by0+bd, yy+layerH);
+    const bt4 = project(bx0, by0+bd, yy+layerH);
+    poly([bt, bt2, bt3, bt4], colors.top, 'rgba(0,0,0,0.28)', 1);
+  }
+}
+
+function drawTeddy(x0, y0, w, d, h, bodyColor, shadowColor){
+  const cx = x0 + w/2, cy = y0 + d/2;
+  const z = cam.zoom;
+  const base = project(cx, cy, 0);
+  // тело
+  const bodyR = w * 0.28 * ISO_X * z;
+  const bodyH = h * 0.6 * z;
+  ctx.fillStyle = bodyColor;
+  ctx.beginPath();
+  ctx.ellipse(base.x, base.y - bodyH, bodyR * 1.5, bodyH, 0, 0, TAU);
+  ctx.fill();
+  // голова
+  const headR = w * 0.25 * ISO_X * z;
+  const headY = base.y - bodyH * 2 - headR * 0.8;
+  ctx.fillStyle = bodyColor;
+  ctx.beginPath(); ctx.arc(base.x, headY, headR, 0, TAU); ctx.fill();
+  // уши
+  ctx.beginPath(); ctx.arc(base.x - headR*0.9, headY - headR*0.6, headR*0.4, 0, TAU); ctx.fill();
+  ctx.beginPath(); ctx.arc(base.x + headR*0.9, headY - headR*0.6, headR*0.4, 0, TAU); ctx.fill();
+  // морда (светлее)
+  ctx.fillStyle = shadowColor;
+  ctx.beginPath(); ctx.ellipse(base.x, headY + headR*0.15, headR*0.7, headR*0.5, 0, 0, TAU); ctx.fill();
+  // глаза и нос
+  ctx.fillStyle = '#1a1a1a';
+  ctx.beginPath(); ctx.arc(base.x - headR*0.35, headY - headR*0.1, headR*0.12, 0, TAU); ctx.fill();
+  ctx.beginPath(); ctx.arc(base.x + headR*0.35, headY - headR*0.1, headR*0.12, 0, TAU); ctx.fill();
+  ctx.beginPath(); ctx.arc(base.x, headY + headR*0.2, headR*0.15, 0, TAU); ctx.fill();
+}
+
+/* обёртка кирпичей — вызываем правильный рендер */
+const _origDrawBricks = drawBricks;
+drawBricks = function(x0, y0, w, d, h){ drawBricksCorrect(x0, y0, w, d, h); };
 
 function drawHumanoid(px, py, phase, opts){
   opts = opts || {};
@@ -1739,6 +1867,24 @@ function drawHumanoid(px, py, phase, opts){
   ctx.fillStyle = clothColor; ctx.strokeStyle = 'rgba(18,24,36,0.55)'; ctx.lineWidth = 1.4*z;
   roundRect(base.x-7*z, shoulderY, 14*z, (hipY-shoulderY)+4*z, 4.5*z);
   ctx.fill(); ctx.stroke();
+  // полоски на желетке
+  if (opts.clothes === 'yellow_vest' || opts.clothes === 'green_vest'){
+    ctx.save();
+    ctx.strokeStyle = '#eef2f9'; ctx.lineWidth = 1*z;
+    ctx.beginPath();
+    ctx.moveTo(base.x-6*z, shoulderY + 6*z); ctx.lineTo(base.x+6*z, shoulderY + 6*z);
+    ctx.moveTo(base.x-6*z, shoulderY + 12*z); ctx.lineTo(base.x+6*z, shoulderY + 12*z);
+    ctx.stroke();
+    ctx.restore();
+  }
+  // пятна на грязной футболке
+  if (opts.clothes === 'dirty_shirt'){
+    ctx.save();
+    ctx.fillStyle = 'rgba(90,60,30,0.6)';
+    ctx.beginPath(); ctx.arc(base.x - 3*z, shoulderY + 8*z, 2*z, 0, TAU); ctx.fill();
+    ctx.beginPath(); ctx.arc(base.x + 2*z, shoulderY + 14*z, 1.5*z, 0, TAU); ctx.fill();
+    ctx.restore();
+  }
   ctx.strokeStyle = clothColor; ctx.lineWidth = 4.6*z;
   ctx.beginPath(); ctx.moveTo(base.x-7*z, shoulderY+3.5*z); ctx.lineTo(base.x-9.5*z-swing*0.6, hipY+2*z); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(base.x+7*z, shoulderY+3.5*z); ctx.lineTo(base.x+9.5*z+swing*0.6, hipY+2*z); ctx.stroke();
@@ -1779,13 +1925,21 @@ function drawHat(hat, cx, topY, headR, z){
     ctx.fillStyle = col;
     ctx.fillRect(cx - headR*0.75, topY - 10*z, headR*1.5, 9*z);
     ctx.fillRect(cx - headR*1.15, topY - 3*z, headR*2.3, 3.5*z);
-  } else if (hat === 'red_cap' || hat === 'blue_cap'){
-    const col = hat === 'red_cap' ? '#e2695f' : '#5f8fe2';
+  } else if (hat === 'red_cap' || hat === 'blue_cap' || hat === 'seller_cap' || hat === 'dirty_cap'){
+    const col = hat === 'red_cap' ? '#e2695f'
+              : hat === 'blue_cap' ? '#5f8fe2'
+              : hat === 'seller_cap' ? '#6ec06a'
+              : '#6b5a3f';
     ctx.fillStyle = col;
     ctx.beginPath();
     ctx.arc(cx, topY - 0.5*z, headR*1.05, Math.PI, 0);
     ctx.fill();
     ctx.fillRect(cx - headR*1.15, topY - 3*z, headR*2.3, 3*z);
+    if (hat === 'dirty_cap'){
+      ctx.fillStyle = 'rgba(40,30,20,0.6)';
+      ctx.beginPath(); ctx.arc(cx - headR*0.4, topY - 5*z, 1.5*z, 0, TAU); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx + headR*0.5, topY - 4*z, 1.2*z, 0, TAU); ctx.fill();
+    }
   } else if (hat === 'crown'){
     ctx.fillStyle = '#ffd166';
     const w = headR*1.1, h = headR*0.9;
@@ -1797,21 +1951,52 @@ function drawHat(hat, cx, topY, headR, z){
     ctx.lineTo(cx + w*0.5, topY - h*0.55);
     ctx.lineTo(cx + w, topY - h);
     ctx.lineTo(cx + w, topY - 1*z);
-    ctx.closePath();
-    ctx.fill();
+    ctx.closePath(); ctx.fill();
+  } else if (hat === 'box_head'){
+    // коробка на голову
+    const bw = headR * 1.5;
+    const bh = headR * 1.4;
+    ctx.fillStyle = '#a87646';
+    ctx.fillRect(cx - bw/2, topY - bh, bw, bh);
+    ctx.strokeStyle = '#6b4a28'; ctx.lineWidth = 1.2*z;
+    ctx.strokeRect(cx - bw/2, topY - bh, bw, bh);
+    // крестик
+    ctx.beginPath();
+    ctx.moveTo(cx - bw/2, topY - bh); ctx.lineTo(cx + bw/2, topY);
+    ctx.moveTo(cx + bw/2, topY - bh); ctx.lineTo(cx - bw/2, topY);
+    ctx.stroke();
+    // глазницы
+    ctx.fillStyle = '#1a1a1a';
+    ctx.fillRect(cx - bw*0.3, topY - bh*0.6, bw*0.2, bh*0.15);
+    ctx.fillRect(cx + bw*0.1, topY - bh*0.6, bw*0.2, bh*0.15);
   }
   ctx.restore();
 }
 
 function drawProjectile(p){
   const base = project(p.x, p.y, 0); const z = cam.zoom;
+  // тень
   ctx.save(); ctx.globalAlpha = 0.25; ctx.fillStyle = '#000';
-  ctx.beginPath(); ctx.ellipse(base.x, base.y, 5*z, 2.6*z, 0, 0, TAU); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(base.x, base.y, 9*z, 4.5*z, 0, 0, TAU); ctx.fill();
   ctx.restore();
   const sp = project(p.x, p.y, p.z);
-  const g = ctx.createRadialGradient(sp.x-1.5*z, sp.y-1.5*z, 0.5*z, sp.x, sp.y, 7*z);
+  // визуально х2 радиус
+  const radius = p.fast ? 12*z : 11.2*z;
+  const g = ctx.createRadialGradient(sp.x-3*z, sp.y-3*z, 1*z, sp.x, sp.y, radius);
   g.addColorStop(0, '#f2ffff'); g.addColorStop(0.45, '#7fdcff'); g.addColorStop(1, '#2b8fd0');
-  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(sp.x, sp.y, 5.6*z, 0, TAU); ctx.fill();
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(sp.x, sp.y, radius * 0.5, 0, TAU); ctx.fill();
+  // хвост для fast
+  if (p.fast){
+    ctx.save();
+    ctx.globalAlpha = 0.5;
+    ctx.strokeStyle = '#7fe3ff'; ctx.lineWidth = 3*z;
+    ctx.beginPath();
+    ctx.moveTo(sp.x, sp.y);
+    ctx.lineTo(sp.x - p.vx * 0.015 * z, sp.y - p.vy * 0.015 * z);
+    ctx.stroke();
+    ctx.restore();
+  }
 }
 function drawSplash(f){
   const t = clamp(f.t/f.max, 0, 1);
@@ -1972,7 +2157,7 @@ function openSettings(){
   const l = state.lobby;
   if (!l || !state.isHost) return;
   const s = l.settings;
-  $('#selMap').value = s.mapMode;
+  $('#selMap').value = s.mapMode || 'lasertag';
   const sel = $('#selHunter'); sel.innerHTML = '';
   sel.add(new Option('Случайно', 'random'));
   for (let i=1; i<=s.playerCount; i++){
@@ -1982,10 +2167,14 @@ function openSettings(){
   sel.value = s.hunter;
   $('#rngCount').value = s.playerCount;
   $('#lblCount').textContent = s.playerCount;
+  $('#rngPrep').value = s.prepDuration || 20;
+  $('#lblPrep').textContent = (s.prepDuration || 20) + 'с';
+  $('#rngMain').value = s.mainDuration || 90;
+  $('#lblMain').textContent = (s.mainDuration || 90) + 'с';
   $('#rngFovP').value = s.fovPlayer;
-  $('#lblFovP').textContent = s.fovPlayer.toFixed(2);
+  $('#lblFovP').textContent = Math.round(s.fovPlayer * 100) + '%';
   $('#rngFovH').value = s.fovHunter;
-  $('#lblFovH').textContent = s.fovHunter.toFixed(2);
+  $('#lblFovH').textContent = Math.round(s.fovHunter * 100) + '%';
   $('#rngRemove').value = s.removePercent;
   $('#lblRemove').textContent = s.removePercent + '%';
   $('#chkDebug').checked = !!s.debug;
@@ -1998,6 +2187,8 @@ function sendSettings(){
   send({ type: 'updateSettings', settings: {
     mapMode: $('#selMap').value, hunter: $('#selHunter').value,
     playerCount: parseInt($('#rngCount').value, 10),
+    prepDuration: parseInt($('#rngPrep').value, 10),
+    mainDuration: parseInt($('#rngMain').value, 10),
     fovPlayer: parseFloat($('#rngFovP').value),
     fovHunter: parseFloat($('#rngFovH').value),
     removePercent: parseInt($('#rngRemove').value, 10),
@@ -2301,8 +2492,10 @@ $('#btnGameMenu').onclick = () => send({ type: 'leaveLobby' });
 $('#selMap').onchange = sendSettings;
 $('#selHunter').onchange = sendSettings;
 $('#rngCount').oninput = e => { $('#lblCount').textContent = e.target.value; sendSettings(); };
-$('#rngFovP').oninput = e => { $('#lblFovP').textContent = parseFloat(e.target.value).toFixed(2); sendSettings(); };
-$('#rngFovH').oninput = e => { $('#lblFovH').textContent = parseFloat(e.target.value).toFixed(2); sendSettings(); };
+$('#rngPrep').oninput = e => { $('#lblPrep').textContent = e.target.value + 'с'; sendSettings(); };
+$('#rngMain').oninput = e => { $('#lblMain').textContent = e.target.value + 'с'; sendSettings(); };
+$('#rngFovP').oninput = e => { $('#lblFovP').textContent = Math.round(parseFloat(e.target.value) * 100) + '%'; sendSettings(); };
+$('#rngFovH').oninput = e => { $('#lblFovH').textContent = Math.round(parseFloat(e.target.value) * 100) + '%'; sendSettings(); };
 $('#rngRemove').oninput = e => { $('#lblRemove').textContent = e.target.value + '%'; sendSettings(); };
 $('#chkDebug').onchange = sendSettings;
 $('#btnStartGame').onclick = () => send({ type: 'startGame' });
