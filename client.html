@@ -131,7 +131,7 @@
     <div class="hud-top">
       <div class="hud-card">
         <div class="role hider" id="gameRole">ВЫ — ПРЯЧУЩИЙСЯ</div>
-        <div class="hud-sub" id="gameTimer">00:00</div>
+        <div class="hud-sub" id="gameTimer">1:30</div>
         <div class="hud-sub" id="gameInfo">Прячущихся: 0</div>
       </div>
       <button class="btn ghost small" id="btnGameMenu">Выйти</button>
@@ -666,9 +666,10 @@ function applyGameStart(msg){
     mapW: msg.game.mapW, mapH: msg.game.mapH, theme: msg.game.theme,
     crates: msg.game.crates, entities: msg.game.entities,
     projectiles: [], effects: [], toasts: [],
-    time: 0, over: false, overTime: 0,
+    time: 0, over: false, overSince: 0,
     phase: msg.game.phase || 'prep',
     prepEndsAt: msg.game.prepEndsAt,
+    timeLeft: 0,
     fovPlayer: msg.game.fovPlayer,
     fovHunter: msg.game.fovHunter,
   };
@@ -701,10 +702,12 @@ function handleState(msg){
   g.projectiles = msg.projectiles || [];
   g.effects = msg.effects || [];
   g.toasts = msg.toasts || [];
-  g.time = msg.time || 0;
-  g.over = !!msg.over;
-  g.overTime = msg.overTime || 0;
   if (msg.phase) g.phase = msg.phase;
+  g.timeLeft = msg.timeLeft || 0;
+  if (msg.over && !g.over){
+    g.over = true;
+    g.overSince = performance.now();
+  }
   updateGameHud();
 }
 function localEntity(){
@@ -837,7 +840,7 @@ function updateMainGame(dt){
     send({ type:'input', x: me.x, y: me.y, fx: me.fx, fy: me.fy,
            disguised: state.localDisguised, disguiseType: state.localDisguiseType });
   }
-  if (me.role === 'hunter' && mouse.down && !isModalOpen() && me.shootCd <= 0) shoot();
+  if (me.role === 'hunter' && mouse.down && !isModalOpen() && me.shootCd <= 0 && !g.over) shoot();
 
   cam.x += (me.x - cam.x) * Math.min(1, dt*8);
   cam.y += (me.y - cam.y) * Math.min(1, dt*8);
@@ -941,8 +944,16 @@ function updateGameHud(){
   }
   const hiders = state.game.entities.filter(e => e.role === 'hider').length;
   $('#gameInfo').textContent = 'Прячущихся: ' + hiders;
-  const t = Math.floor(state.game.time);
-  $('#gameTimer').textContent = String(Math.floor(t/60)).padStart(2,'0') + ':' + String(t%60).padStart(2,'0');
+  // обратный отсчёт
+  if (state.game.phase === 'main'){
+    const left = Math.max(0, state.game.timeLeft || 0);
+    $('#gameTimer').textContent = `${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}`;
+  } else if (state.game.phase === 'prep'){
+    const left = Math.max(0, Math.ceil((state.game.prepEndsAt - Date.now())/1000));
+    $('#gameTimer').textContent = `до охоты ${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}`;
+  } else {
+    $('#gameTimer').textContent = '00:00';
+  }
 }
 
 /* ===== rendering primitives ===== */
@@ -984,9 +995,7 @@ function drawObject(type, cx, cy, highlight){
   const w = def.w * CELL, d = def.d * CELL;
   const h = def.h;
   const z = cam.zoom;
-
   poly([project(x0,y0,0),project(x0+w,y0,0),project(x0+w,y0+d,0),project(x0,y0+d,0)],'rgba(0,0,0,0.25)');
-
   switch (def.render) {
     case 'block':   drawIsoBox(x0, y0, w, d, h, def.colors); break;
     case 'box':     drawBoxObj(x0, y0, w, d, h); break;
@@ -1002,7 +1011,6 @@ function drawObject(type, cx, cy, highlight){
     case 'car':     drawCar(x0, y0, w, d, h); break;
     case 'stump':   drawStump(x0, y0, w, d, h); break;
   }
-
   if (highlight){
     ctx.save();
     ctx.globalAlpha = highlight;
@@ -1103,7 +1111,6 @@ function drawTree(x0, y0, w, d, h){
   ctx.save(); ctx.globalAlpha = 0.3; ctx.fillStyle = '#000';
   ctx.beginPath(); ctx.ellipse(sh.x, sh.y, w*0.55*ISO_X*z, w*0.55*ISO_Y*z, 0, 0, TAU);
   ctx.fill(); ctx.restore();
-
   const trunkW = w * 0.22;
   const tx0 = cx - trunkW/2, ty0 = cy - trunkW/2;
   const trunkH = h * 0.55;
@@ -1120,7 +1127,6 @@ function drawTree(x0, y0, w, d, h){
     ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
   }
   ctx.restore();
-
   const crownBase = project(cx, cy, trunkH);
   ctx.fillStyle = '#2f5a1f';
   ctx.beginPath();
@@ -1189,7 +1195,6 @@ function drawFence(x0, y0, w, d, h){
   const z = cam.zoom;
   const color = '#a87646';
   const dark = '#6b4a28';
-
   ctx.save();
   ctx.strokeStyle = dark;
   ctx.lineWidth = 3*z;
@@ -1200,7 +1205,6 @@ function drawFence(x0, y0, w, d, h){
   const r2b = project(x0 + w*0.9, y0 + d*0.5, h*0.9);
   ctx.beginPath(); ctx.moveTo(r2a.x, r2a.y); ctx.lineTo(r2b.x, r2b.y); ctx.stroke();
   ctx.restore();
-
   for (const off of [0.15, 0.85]) {
     const bx = x0 + w*off;
     const by = y0 + d/2;
@@ -1247,7 +1251,6 @@ function drawHouse(x0, y0, w, d, h){
 function drawTruck(x0, y0, w, d, h){
   const z = cam.zoom;
   const bodyH = h * 0.55;
-
   drawIsoBox(x0, y0 + d*0.15, w*0.6, d*0.7, bodyH, {
     top: '#d8d8d8', side1: '#a0a0a0', side2: '#808080'
   });
@@ -1259,7 +1262,6 @@ function drawTruck(x0, y0, w, d, h){
     const b = project(x0 + w*0.6, y0 + d*0.85, yy);
     ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
   }
-
   const cabX = x0 + w*0.6;
   const cabY = y0 + d*0.15;
   drawIsoBox(cabX, cabY, w*0.4, d*0.7, h, {
@@ -1271,19 +1273,16 @@ function drawTruck(x0, y0, w, d, h){
   const ws3 = project(cabX + w*0.35, cabY + d*0.7, h*0.45);
   const ws4 = project(cabX + w*0.05, cabY + d*0.7, h*0.45);
   poly([ws1, ws2, ws3, ws4], '#8fc7f0');
-
   const sw1 = project(cabX + w*0.4, cabY + d*0.2, wsY);
   const sw2 = project(cabX + w*0.4, cabY + d*0.6, wsY);
   const sw3 = project(cabX + w*0.4, cabY + d*0.6, h*0.5);
   const sw4 = project(cabX + w*0.4, cabY + d*0.2, h*0.5);
   poly([sw1, sw2, sw3, sw4], '#8fc7f0');
-
   const hl1 = project(cabX + w*0.38, cabY + d*0.1, h*0.2);
   ctx.fillStyle = '#ffe68a';
   ctx.beginPath();
   ctx.arc(hl1.x, hl1.y, 2.5*z, 0, TAU);
   ctx.fill();
-
   ctx.fillStyle = '#1a1a1a';
   const wheelY = 6;
   for (const [wx, wy] of [
@@ -1306,28 +1305,23 @@ function drawTruck(x0, y0, w, d, h){
 function drawCar(x0, y0, w, d, h){
   const z = cam.zoom;
   const bodyH = h * 0.5;
-
   drawIsoBox(x0 + w*0.05, y0 + d*0.1, w*0.9, d*0.8, bodyH, {
     top: '#c94f4f', side1: '#953735', side2: '#6d2725'
   });
-
   drawIsoBox(x0 + w*0.2, y0 + d*0.2, w*0.6, d*0.6, h, {
     top: '#e86b6b', side1: '#b8463f', side2: '#8a2f2a'
   });
-
   const wsY = h * 0.9;
   const ws1 = project(x0 + w*0.25, y0 + d*0.75, wsY);
   const ws2 = project(x0 + w*0.75, y0 + d*0.75, wsY);
   const ws3 = project(x0 + w*0.75, y0 + d*0.75, h*0.55);
   const ws4 = project(x0 + w*0.25, y0 + d*0.75, h*0.55);
   poly([ws1, ws2, ws3, ws4], '#8fc7f0');
-
   const sw1 = project(x0 + w*0.8, y0 + d*0.25, wsY);
   const sw2 = project(x0 + w*0.8, y0 + d*0.75, wsY);
   const sw3 = project(x0 + w*0.8, y0 + d*0.75, h*0.55);
   const sw4 = project(x0 + w*0.8, y0 + d*0.25, h*0.55);
   poly([sw1, sw2, sw3, sw4], '#8fc7f0');
-
   const hl = project(x0 + w*0.9, y0 + d*0.3, h*0.25);
   ctx.fillStyle = '#ffe68a';
   ctx.beginPath();
@@ -1338,7 +1332,6 @@ function drawCar(x0, y0, w, d, h){
   ctx.beginPath();
   ctx.arc(tl.x, tl.y, 2*z, 0, TAU);
   ctx.fill();
-
   ctx.fillStyle = '#1a1a1a';
   for (const [wx, wy] of [
     [x0 + w*0.2, y0 + d*0.9],
@@ -1511,21 +1504,16 @@ function drawFloatLabel(sx, sy, text){
 function drawEntity(e){
   const phase = state.game.phase;
   const showName = (phase === 'prep');
-
   if (e.role === 'hider' && e.disguised && e.disguiseType){
     const def = OBJECT_DEFS[e.disguiseType];
-    if (def){
-      drawObject(e.disguiseType, e.x, e.y, 0);
-    } else {
-      drawHumanoid(e.x, e.y, performance.now()/80, { hat: e.hat, clothes: e.clothes });
-    }
+    if (def) drawObject(e.disguiseType, e.x, e.y, 0);
+    else drawHumanoid(e.x, e.y, performance.now()/80, { hat: e.hat, clothes: e.clothes });
   } else {
     drawHumanoid(e.x, e.y, performance.now()/80, {
       hat: e.hat || 'none', clothes: e.clothes || 'none',
       gun: e.role === 'hunter', flash: e.shootFlash
     });
   }
-
   if (e.id === state.youId){
     const b = project(e.x, e.y, 0); const z = cam.zoom;
     ctx.save(); ctx.globalAlpha = 0.85;
@@ -1536,7 +1524,6 @@ function drawEntity(e){
     ctx.beginPath(); ctx.ellipse(b.x, b.y, 17*z, 8.5*z, 0, 0, TAU); ctx.stroke();
     ctx.restore();
   }
-
   if (showName){
     const pl = state.lobby && state.lobby.players.find(p => p.id === e.id);
     if (pl){
@@ -1570,11 +1557,9 @@ function renderGame(){
   const g = state.game; if (!g) return;
   const th = THEMES[g.theme] || THEMES.black;
   const worldW = g.mapW * CELL, worldH = g.mapH * CELL;
-
   drawFloor(0, 0, worldW, worldH, th.floor, th.grid, 48);
   poly([project(0,0,0),project(worldW,0,0),project(worldW,worldH,0),project(0,worldH,0)],
        null, '#5ac8ff55', 2);
-
   const me = localEntity();
   const items = [];
   for (const c of g.crates){
@@ -1593,12 +1578,10 @@ function renderGame(){
   for (const p of g.projectiles) items.push({ d: (p.x + p.y) / CELL, fn: () => drawProjectile(p) });
   items.sort((a,b) => a.d - b.d); items.forEach(i => i.fn());
   for (const f of g.effects) drawSplash(f);
-
   if (state.nearCrate && me && me.role === 'hider' && !state.localDisguised){
     const pr = project(state.nearCrate.x, state.nearCrate.y, state.nearCrate.h + 30);
     drawFloatLabel(pr.x, pr.y, 'E');
   }
-
   for (const t of g.toasts){
     const pr = project(t.x, t.y, t.z);
     ctx.save(); ctx.globalAlpha = clamp(t.life, 0, 1);
@@ -1608,13 +1591,11 @@ function renderGame(){
     ctx.fillText(t.text, pr.x, pr.y);
     ctx.restore();
   }
-
   drawFOVOverlay(state.fovCurrent);
-
   if (g.over){
-    const a = Math.min(1, g.overTime * 2);
-    const remaining = Math.max(0, Math.ceil(5 - g.overTime));
-    ctx.save(); ctx.globalAlpha = a;
+    const elapsed = (performance.now() - g.overSince) / 1000;
+    const remaining = Math.max(0, Math.ceil(5 - elapsed));
+    ctx.save();
     ctx.fillStyle = 'rgba(8,12,18,0.72)';
     ctx.fillRect(0, H*0.34, W, 150);
     ctx.textAlign = 'center';
