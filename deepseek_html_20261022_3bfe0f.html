@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>blockhide — редактор новостей</title>
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;background:#0a0d13;color:#e8edf7;font-family:'Segoe UI',system-ui,sans-serif;padding:24px;min-height:100vh;}
+  .wrap{max-width:900px;margin:0 auto;}
+  h1{margin:0 0 6px;font-size:26px;letter-spacing:-.02em;}
+  h1 span{color:#5ac8ff;}
+  .sub{color:#8b98ad;font-size:13px;margin-bottom:24px;}
+  .card{background:linear-gradient(180deg,#151b26,#10151e);border:1px solid #2a3446;border-radius:14px;padding:20px;margin-bottom:18px;}
+  .card h2{margin:0 0 14px;font-size:15px;color:#5ac8ff;text-transform:uppercase;letter-spacing:.05em;}
+  input[type=text],input[type=password],textarea{
+    width:100%;background:#1c2433;color:#e8edf7;border:1px solid #2a3446;
+    border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;outline:none;
+    margin-bottom:10px;resize:vertical;
+  }
+  input:focus,textarea:focus{border-color:#5ac8ff;}
+  textarea{min-height:140px;line-height:1.5;}
+  .btn{border:1px solid #2a3446;background:linear-gradient(180deg,#222c3d,#1a2230);
+    color:#e8edf7;padding:10px 18px;border-radius:8px;font-size:14px;font-weight:600;
+    font-family:inherit;cursor:pointer;transition:all .12s;}
+  .btn:hover{background:linear-gradient(180deg,#2b374b,#202a3a);}
+  .btn.primary{background:linear-gradient(180deg,#3fb4f0,#1f7fc4);border-color:#5ac8ff;color:#04121c;}
+  .btn.danger{background:linear-gradient(180deg,#c94f4f,#8a3322);border-color:#c94f4f;color:#fff;}
+  .btn.small{padding:6px 12px;font-size:12.5px;}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+  .preview{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;}
+  .preview img{width:100px;height:100px;object-fit:cover;border-radius:8px;border:1px solid #2a3446;}
+  .news-list{display:flex;flex-direction:column;gap:12px;}
+  .news-item{background:#1c2433;border:1px solid #2a3446;border-radius:10px;padding:12px;}
+  .news-item h3{margin:0 0 4px;font-size:15px;}
+  .news-item .date{font-size:11.5px;color:#8b98ad;margin-bottom:8px;}
+  .news-item .text{font-size:13px;color:#c2cfe0;white-space:pre-wrap;max-height:100px;overflow:auto;margin-bottom:8px;}
+  .news-item .imgs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+  .news-item .imgs img{width:60px;height:60px;object-fit:cover;border-radius:6px;border:1px solid #2a3446;}
+  .empty{color:#8b98ad;text-align:center;padding:20px;}
+  .status{font-size:13px;margin-top:6px;}
+  .status.ok{color:#7ee787;}
+  .status.err{color:#ff7b72;}
+  .file-input{display:none;}
+  .file-label{border:1px dashed #2a3446;padding:10px 18px;border-radius:8px;cursor:pointer;
+    color:#8b98ad;font-size:13px;transition:all .12s;}
+  .file-label:hover{border-color:#5ac8ff;color:#5ac8ff;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>block<span>hide</span> — редактор новостей</h1>
+  <div class="sub">Отдельная программа. Публикует новости в игру через API сервера.</div>
+
+  <div class="card">
+    <h2>🔑 Пароль администратора</h2>
+    <div class="row">
+      <input type="password" id="inpPass" placeholder="admin123" style="flex:1;margin-bottom:0;">
+      <button class="btn" id="btnCheck">Проверить</button>
+    </div>
+    <div class="status" id="statusPass"></div>
+  </div>
+
+  <div class="card">
+    <h2>✍️ Новая новость</h2>
+    <input type="text" id="inpTitle" placeholder="Заголовок (обязательно)" maxlength="200">
+    <textarea id="inpText" placeholder="Текст новости (обязательно)" maxlength="8000"></textarea>
+    <div class="row" style="margin-bottom:10px;">
+      <label class="file-label" for="inpFiles">📎 Прикрепить картинки</label>
+      <input type="file" id="inpFiles" class="file-input" accept="image/*" multiple>
+      <button class="btn small" id="btnClearImgs">Очистить картинки</button>
+    </div>
+    <div class="preview" id="preview"></div>
+    <button class="btn primary" id="btnPublish">📤 Опубликовать</button>
+    <div class="status" id="statusPub"></div>
+  </div>
+
+  <div class="card">
+    <h2>📰 Существующие новости <button class="btn small" id="btnReload" style="float:right;">Обновить</button></h2>
+    <div class="news-list" id="newsList"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+const $ = s => document.querySelector(s);
+const API = '/api/news';
+let images = []; // массив base64
+
+function pass(){ return $('#inpPass').value.trim(); }
+
+async function checkPass(){
+  const r = await fetch(API, {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json', 'x-admin-pass': pass() },
+    body: JSON.stringify({ title:'__test__', text:'__test__' })
+  });
+  if (r.ok){
+    // удалить тестовую
+    const j = await r.json();
+    if (j.item) await fetch(API + '/' + j.item.id, { method:'DELETE', headers:{ 'x-admin-pass': pass() } });
+    $('#statusPass').textContent = '✓ Пароль верный';
+    $('#statusPass').className = 'status ok';
+  } else {
+    $('#statusPass').textContent = '✗ Неверный пароль';
+    $('#statusPass').className = 'status err';
+  }
+  loadNews();
+}
+
+function renderPreview(){
+  const wrap = $('#preview');
+  wrap.innerHTML = '';
+  images.forEach((src, i) => {
+    const img = document.createElement('img');
+    img.src = src;
+    img.title = 'Удалить';
+    img.style.cursor = 'pointer';
+    img.onclick = () => { images.splice(i, 1); renderPreview(); };
+    wrap.appendChild(img);
+  });
+}
+
+$('#inpFiles').onchange = e => {
+  const files = [...e.target.files];
+  files.forEach(f => {
+    if (!f.type.startsWith('image/')) return;
+    if (f.size > 5 * 1024 * 1024) return alert('Файл больше 5 МБ: ' + f.name);
+    const reader = new FileReader();
+    reader.onload = ev => { images.push(ev.target.result); renderPreview(); };
+    reader.readAsDataURL(f);
+  });
+  e.target.value = '';
+};
+$('#btnClearImgs').onclick = () => { images = []; renderPreview(); };
+
+async function publish(){
+  const title = $('#inpTitle').value.trim();
+  const text = $('#inpText').value.trim();
+  if (!title || !text){ $('#statusPub').textContent = '✗ Заполни заголовок и текст'; $('#statusPub').className = 'status err'; return; }
+  try {
+    const r = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'x-admin-pass': pass() },
+      body: JSON.stringify({ title, text, images })
+    });
+    if (!r.ok){ $('#statusPub').textContent = '✗ Ошибка: ' + r.status; $('#statusPub').className = 'status err'; return; }
+    $('#statusPub').textContent = '✓ Опубликовано';
+    $('#statusPub').className = 'status ok';
+    $('#inpTitle').value = '';
+    $('#inpText').value = '';
+    images = []; renderPreview();
+    loadNews();
+  } catch(e){
+    $('#statusPub').textContent = '✗ ' + e.message;
+    $('#statusPub').className = 'status err';
+  }
+}
+
+async function loadNews(){
+  try {
+    const r = await fetch(API, { cache: 'no-store' });
+    const list = await r.json();
+    const wrap = $('#newsList');
+    wrap.innerHTML = '';
+    if (!list.length){
+      wrap.innerHTML = '<div class="empty">Новостей пока нет</div>';
+      return;
+    }
+    for (const n of list){
+      const d = new Date(n.date).toLocaleString('ru-RU');
+      const el = document.createElement('div');
+      el.className = 'news-item';
+      let imgs = '';
+      if (n.images && n.images.length){
+        imgs = '<div class="imgs">' + n.images.map(s => `<img src="${s}">`).join('') + '</div>';
+      }
+      el.innerHTML = `<h3>${esc(n.title)}</h3><div class="date">${d}</div><div class="text">${esc(n.text)}</div>${imgs}<button class="btn danger small" data-id="${n.id}">Удалить</button>`;
+      el.querySelector('button').onclick = async () => {
+        if (!confirm('Удалить эту новость?')) return;
+        await fetch(API + '/' + n.id, { method:'DELETE', headers:{ 'x-admin-pass': pass() } });
+        loadNews();
+      };
+      wrap.appendChild(el);
+    }
+  } catch(e){
+    $('#newsList').innerHTML = '<div class="empty">Ошибка загрузки</div>';
+  }
+}
+
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+$('#btnCheck').onclick = checkPass;
+$('#btnPublish').onclick = publish;
+$('#btnReload').onclick = loadNews;
+
+loadNews();
+})();
+</script>
+</body>
+</html>
